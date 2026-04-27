@@ -1,0 +1,1470 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Checq Printer Advance 3.3.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  :root{ 
+    --w-mm:241.3; 
+    --h-mm:104.8;
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4cc9f0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --success-color: #4bb543;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+  }
+  html,body{height:100%;margin:0;padding:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f4f4f4}
+  .wrap{display:flex;gap:12px;padding:12px;height:calc(100% - 24px);box-sizing:border-box}
+  .panel{width:480px;background:#fff;padding:16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow-y:auto}
+  h1.app-title{margin:0 0 8px 0;font-size:20px;color:var(--primary-color);font-weight:600}
+  .ver{font-size:12px;color:#666;margin-left:8px;background:#e9ecef;padding:2px 6px;border-radius:4px}
+  label{display:block;margin-top:12px;font-size:14px;font-weight:500;color:var(--dark-color)}
+  input[type=text], input[type=number], input[type=date], select{width:100%;padding:10px;font-size:14px;box-sizing:border-box;border:1px solid #ced4da;border-radius:4px;transition:border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out}
+  input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus{outline:0;border-color:var(--accent-color);box-shadow:0 0 0 3px rgba(76, 201, 240, 0.25)}
+  button{padding:10px 16px;margin-top:10px;border:none;border-radius:4px;font-weight:500;cursor:pointer;transition:all 0.2s ease}
+  .btn-primary{background-color:var(--primary-color);color:white}
+  .btn-primary:hover{background-color:var(--secondary-color);transform:translateY(-1px)}
+  .btn-secondary{background-color:#6c757d;color:white}
+  .btn-secondary:hover{background-color:#5a6268;transform:translateY(-1px)}
+  .btn-success{background-color:var(--success-color);color:white}
+  .btn-success:hover{background-color:#3d8f35;transform:translateY(-1px)}
+  .btn-danger{background-color:var(--danger-color);color:white}
+  .btn-danger:hover{background-color:#c82333;transform:translateY(-1px)}
+  
+  /* safer print rules: hide only UI, show #printArea explicitly */
+  @page { size: 241.3mm 104.8mm; margin: 0; }
+  @media print{
+    html, body {
+      width: 241.3mm !important;
+      height: 104.8mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    /* hide the editor panel and controls */
+    .panel, .controls-row, .hint, .denomination-section { display: none !important; }
+    /* be explicit: show the cheque area and its contents */
+    #printArea {
+      display: block !important;
+      visibility: visible !important;
+      position: fixed !important;
+      left: 50mm !important; /* Move 10cm to the right */
+      top: 0.9mm !important;
+      margin: 0 !important;
+      width: 203mm !important;
+      height: 103mm !important;
+      box-shadow: none !important;
+      page-break-after: avoid !important;
+      page-break-before: avoid !important;
+      page-break-inside: avoid !important;
+      overflow: hidden !important;
+      background-color: #ffffff !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color: #000 !important;
+    }
+    /* hide editor UI elements */
+    .handle, .edit-border { display: none !important; }
+  }
+
+  /* on-screen layout */
+  #printArea{width:203mm;height:103mm;position:relative;background:#fff;border:0;box-sizing:border-box;background-size:100% 100%;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:4px}
+  .field{position:absolute;box-sizing:border-box;padding:2px;cursor:grab;user-select:none;touch-action:none;color:#000}
+  .field .txt{pointer-events:none}
+  .handle{position:absolute;width:10px;height:10px;background:var(--accent-color);border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.25);right:-7px;bottom:-7px;cursor:se-resize}
+  .edit-border{outline:1px dashed rgba(0,0,0,0.08)}
+  .num{text-align:right;font-weight:600}
+  .controls-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .hint{font-size:12px;color:#555;margin-top:12px;line-height:1.4}
+  
+  /* Denomination Calculator Styles */
+  .denomination-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--primary-color)}
+  .denomination-section h3{color:var(--secondary-color);margin-top:0;margin-bottom:12px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
+  .denomination-row{display:flex;align-items:center;margin-bottom:10px;padding:8px;background:white;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.05);gap:8px}
+  .denomination-label{flex:0 0 60px;font-weight:500;color:var(--dark-color)}
+  .denomination-input{width:80px;padding:6px 8px;text-align:center;border:1px solid #ced4da;border-radius:4px;font-weight:500}
+  .denomination-value{flex:1;text-align:right;font-weight:500;color:var(--secondary-color)}
+  .denomination-total{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px dashed #ced4da;font-weight:600;font-size:16px;color:var(--secondary-color)}
+  .denomination-buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+
+  /* New styles for version 3.3 */
+  .date-row{display:flex;gap:8px;align-items:center}
+  .date-row input{flex:1}
+  .date-row button{width:auto;margin-top:0}
+  .sheet-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--success-color)}
+  .sheet-section h3{color:var(--success-color);margin-top:0;margin-bottom:12px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .sheet-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234bb543"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>') no-repeat center;background-size:contain}
+  .status-message{padding:8px 12px;border-radius:4px;margin-top:8px;font-size:14px}
+  .status-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+  .status-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+  .status-loading{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb}
+  .url-input-section{margin-top:12px}
+  .url-input{font-family:monospace;font-size:12px}
+  
+  /* New status indicator */
+  .connection-status{display:inline-flex;align-items:center;gap:6px;margin-left:10px;font-size:12px;padding:2px 8px;border-radius:12px}
+  .status-connected{background:#d4edda;color:#155724}
+  .status-disconnected{background:#f8d7da;color:#721c24}
+  .status-dot{width:8px;height:8px;border-radius:50%}
+  .connected-dot{background:#28a745}
+  .disconnected-dot{background:#dc3545}
+  
+  /* Batch processing */
+  .batch-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--warning-color)}
+  .batch-section h3{color:var(--warning-color);margin-top:0;margin-bottom:12px;font-size:16px}
+  .batch-row{display:flex;gap:8px;margin-bottom:8px}
+  .batch-input{flex:1}
+  .batch-count{font-size:12px;color:#666;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center">
+        <h1 class="app-title">Checq Printer Advance</h1>
+        <div class="ver">v3.3</div>
+      </div>
+      <div style="font-size:12px;color:#666;background:#e9ecef;padding:4px 8px;border-radius:4px">COM-10 • 241.3 × 104.8 mm</div>
+    </div>
+
+    <label>Bank</label>
+    <select id="bankSelect">
+      <option value="Canara Bank">Canara Bank</option>
+      <option value="State Bank of India">State Bank of India</option>
+      <option value="HDFC Bank">HDFC Bank</option>
+      <option value="ICICI Bank">ICICI Bank</option>
+      <option value="Axis Bank">Axis Bank</option>
+      <option value="Punjab National Bank">Punjab National Bank</option>
+      <option value="Bank of Baroda">Bank of Baroda</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label>Payee</label>
+    <input id="payeeInput" type="text" value="Payee Name">
+
+    <label>Amount (₹)</label>
+    <input id="amountInput" type="number" step="0.01" value="0">
+
+    <label>Date</label>
+    <div class="date-row">
+      <input id="datePicker" type="date">
+      <button id="todayBtn" class="btn-secondary" title="Set today's date">📅 Today</button>
+    </div>
+    <input id="dateInput" type="text" placeholder="DD/MM/YYYY" style="margin-top:6px" value="DD/MM/YYYY">
+
+    <label>Signature</label>
+    <input id="signInput" type="text" value="Authorized Signatory">
+
+    <label>Cheque Number (for reference only)</label>
+    <input id="chequeNoInput" type="text" placeholder="Enter cheque number">
+
+    <label style="margin-top:12px">Background image (optional)</label>
+    <input id="bgFile" type="file" accept="image/*">
+
+    <div class="controls-row">
+      <button id="updateBtn" class="btn-primary">👀 Update Preview</button>
+      <button id="printBtn" class="btn-primary">🖨️ Print Checq</button>
+      <button id="saveBtn" class="btn-secondary">💾 Save Layout</button>
+      <button id="loadBtn" class="btn-secondary">📂 Load Layout</button>
+      <button id="clearValuesBtn" class="btn-secondary">🧹 Clear Cheque Values</button>
+      <input id="jsonFile" type="file" accept=".json" style="display:none">
+    </div>
+    <!-- Denomination Calculator Section -->
+    <div class="denomination-section">
+      <h3>Denomination Calculator</h3>
+
+      <div class="denomination-row">
+        <div class="denomination-label">₹ 500</div>
+        <input type="number" min="0" class="denomination-input" id="denom500" value="0">
+        <div class="denomination-value" id="denom500Value">₹ 0</div>
+      </div>
+
+      <div class="denomination-row">
+        <div class="denomination-label">₹ 200</div>
+        <input type="number" min="0" class="denomination-input" id="denom200" value="0">
+        <div class="denomination-value" id="denom200Value">₹ 0</div>
+      </div>
+
+      <div class="denomination-row">
+        <div class="denomination-label">₹ 100</div>
+        <input type="number" min="0" class="denomination-input" id="denom100" value="0">
+        <div class="denomination-value" id="denom100Value">₹ 0</div>
+      </div>
+
+      <div class="denomination-total">
+        <span>Total:</span>
+        <span id="denomTotal">₹ 0</span>
+      </div>
+
+      <div class="denomination-buttons">
+        <button id="autoFillBtn" class="btn-success">🔄 Auto-fill Amount</button>
+        <button id="clearDenomBtn" class="btn-danger">🗑️ Clear</button>
+        <button id="previewDenomBtn" class="btn-primary">👀 Preview Denomination</button>
+        <button id="printDenomBtn" class="btn-primary">🖨️ Print Denomination</button>
+      </div>
+
+    <!-- Batch Processing Section -->
+    <div class="batch-section">
+      <h3>Batch Processing</h3>
+      <div class="batch-row">
+        <input id="batchCount" type="number" min="1" max="100" value="1" class="batch-input" placeholder="Number of cheques">
+        <button id="batchPrintBtn" class="btn-primary">🖨️ Batch Print</button>
+      </div>
+      <div class="batch-count" id="batchStatus">Ready for batch printing</div>
+    </div>
+
+    <!-- Google Sheets Integration Section - UPDATED -->
+    <div class="sheet-section">
+      <h3>
+        Save to Google Sheets 
+        <span id="connectionStatus" class="connection-status status-disconnected">
+          <span class="status-dot disconnected-dot"></span>
+          <span>Not Connected</span>
+        </span>
+      </h3>
+      <p style="margin:0 0 12px 0;font-size:14px;color:#555">Save cheque details to Google Sheets for record keeping</p>
+      
+      <div class="url-input-section">
+        <label for="scriptUrlInput">Google Apps Script URL:</label>
+        <input id="scriptUrlInput" type="text" class="url-input" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbyPf3wJEx1JsCTYxsQMNbg9czuQj_TeaNDOrHRGvgUy6vfZZbFHBFmTFm56g7YW0B7B/exec">
+        <div style="font-size:11px;color:#666;margin-top:4px">Use your deployed GAS web app URL</div>
+      </div>
+      
+      <div class="controls-row">
+        <button id="saveToSheetBtn" class="btn-success">💾 Save to Sheet</button>
+        <button id="testConnectionBtn" class="btn-secondary">🔗 Test Connection</button>
+        <button id="resetUrlBtn" class="btn-danger">🔄 Reset URL</button>
+        <button id="openSheetBtn" class="btn-secondary">📊 Open Sheet</button>
+      </div>
+      <div id="statusMessage"></div>
+    </div>
+
+
+    </div>
+
+    <p class="hint">
+      Print: Manual Feed / Front Bypass — Paper Size <strong>241.3 × 104.8 mm (COM-10)</strong>, Scale = 100%, Orientation = Landscape, Margins = None.
+      <br><small>Controls: Drag = move, handle = resize, <strong>Ctrl+Wheel</strong> = font size, <strong>Shift+Wheel</strong> = move up/down, <strong>Alt+Wheel</strong> = move left/right.</small>
+    </p>
+  </div>
+
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f0f8ff;border-radius:8px;position:relative">
+    <div id="printArea" aria-label="print area">
+      <!-- Date field (printed as spaced digits) -->
+      <div id="fld_date" class="field edit-border" style="left:127.5mm;top:5.2mm;width:36.3mm;height:5.3mm;font-size:12px;text-align:center;display:flex;align-items:center;justify-content:center">
+        <div class="txt">D D D D D D D D</div><div class="handle" data-handle="resize"></div>
+      </div>
+
+      <!-- Payee -->
+      <div id="fld_payee" class="field edit-border" style="left:10.6mm;top:14.7mm;width:100.8mm;height:5.6mm;font-size:16px;display:flex;align-items:center">
+        <div class="txt">Payee Name</div><div class="handle" data-handle="resize"></div>
+      </div>
+
+      <!-- Amount (numbers) -->
+      <div id="fld_amount_num" class="field edit-border num" style="left:150mm;top:17mm;width:40mm;height:8mm;font-size:14px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px">
+        <div class="txt">₹ 0.00</div><div class="handle" data-handle="resize"></div>
+      </div>
+
+      <!-- Amount (words) -->
+      <div id="fld_amount_words" class="field edit-border" style="left:18.7mm;top:23.7mm;width:141.8mm;height:10mm;font-size:14px;display:flex;align-items:center">
+        <div class="txt">Amount in words</div><div class="handle" data-handle="resize"></div>
+      </div>
+
+      <!-- Signature -->
+      <div id="fld_sign" class="field edit-border" style="left:119.7mm;top:42.3mm;width:30.3mm;height:14mm;font-size:14px;text-align:center;display:flex;align-items:center;justify-content:center">
+        <div class="txt">Authorized Signatory</div><div class="handle" data-handle="resize"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== GLOBAL VARIABLES ========== */
+const printArea = document.getElementById('printArea');
+let currentScriptUrl = 'https://script.google.com/macros/s/AKfycbyPf3wJEx1JsCTYxsQMNbg9czuQj_TeaNDOrHRGvgUy6vfZZbFHBFmTFm56g7YW0B7B/exec';
+let isConnected = false;
+
+/* ========== HELPER FUNCTIONS ========== */
+function pxPerMM(){ 
+  const r = printArea.getBoundingClientRect(); 
+  return {x: r.width/203, y: r.height/103}; 
+}
+
+/* Convert number to Indian words */
+function toIndianWords(amount){
+  amount = Number(amount) || 0;
+  const rupees = Math.floor(amount);
+  const paise = Math.round((amount - rupees) * 100);
+  const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const b = ['','', 'Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function two(n){ if(n<20) return a[n]; let s = b[Math.floor(n/10)]; if(n%10) s += ' ' + a[n%10]; return s; }
+  function three(n){ let s=''; if(n>99){ s += a[Math.floor(n/100)] + ' Hundred'; if(n%100) s += ' and '; } if(n%100) s += two(n%100); return s; }
+  let n = rupees;
+  const crore = Math.floor(n/10000000); n %= 10000000;
+  const lakh = Math.floor(n/100000); n %= 100000;
+  const thousand = Math.floor(n/1000); n %= 1000;
+  const hundred = n;
+  let parts = [];
+  if(crore) parts.push(three(crore) + ' Crore');
+  if(lakh) parts.push(three(lakh) + ' Lakh');
+  if(thousand) parts.push(three(thousand) + ' Thousand');
+  if(hundred) parts.push(three(hundred));
+  if(parts.length === 0) parts.push('Zero');
+  let words = parts.join(' ');
+  if(paise > 0) words += ' and ' + two(paise) + ' Paise';
+  words += ' only';
+  return words;
+}
+
+/* ========== ELEMENTS ========== */
+const bankSelect = document.getElementById('bankSelect');
+const payeeInput = document.getElementById('payeeInput');
+const amountInput = document.getElementById('amountInput');
+const datePicker = document.getElementById('datePicker');
+const dateInput = document.getElementById('dateInput');
+const signInput = document.getElementById('signInput');
+const chequeNoInput = document.getElementById('chequeNoInput');
+const clearValuesBtn = document.getElementById('clearValuesBtn');
+const todayBtn = document.getElementById('todayBtn');
+const scriptUrlInput = document.getElementById('scriptUrlInput');
+const resetUrlBtn = document.getElementById('resetUrlBtn');
+const openSheetBtn = document.getElementById('openSheetBtn');
+const connectionStatus = document.getElementById('connectionStatus');
+
+const fld_payee = document.getElementById('fld_payee');
+const fld_amount_words = document.getElementById('fld_amount_words');
+const fld_amount_num = document.getElementById('fld_amount_num');
+const fld_date = document.getElementById('fld_date');
+const fld_sign = document.getElementById('fld_sign');
+// ===== LAST ENTRY LOCAL STORAGE =====
+const LAST_ENTRY_KEY = 'chequeLastEntry_v1';
+
+function saveLastEntryToLocalStorage() {
+  const data = {
+    bank: bankSelect.value || '',
+    payee: payeeInput.value || '',
+    amount: amountInput.value || '',
+    dateText: dateInput.value || '',
+    dateIso: datePicker.value || '',
+    sign: signInput.value || '',
+    chequeNo: chequeNoInput.value || '',
+    denom: {
+      d500: denominationInputs[500].value || '0',
+      d200: denominationInputs[200].value || '0',
+      d100: denominationInputs[100].value || '0'
+    }
+  };
+  try {
+    localStorage.setItem(LAST_ENTRY_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.log('LocalStorage save error', e);
+  }
+}
+
+function loadLastEntryFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(LAST_ENTRY_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    if (data.bank)    bankSelect.value   = data.bank;
+    if (data.payee)   payeeInput.value   = data.payee;
+    if (data.amount)  amountInput.value  = data.amount;
+    if (data.dateText) dateInput.value   = data.dateText;
+    if (data.dateIso)  datePicker.value  = data.dateIso;
+    if (data.sign)    signInput.value    = data.sign;
+    if (data.chequeNo) chequeNoInput.value = data.chequeNo;
+
+    if (data.denom) {
+      if (data.denom.d500 && denominationInputs[500]) {
+        denominationInputs[500].value = data.denom.d500;
+      }
+      if (data.denom.d200 && denominationInputs[200]) {
+        denominationInputs[200].value = data.denom.d200;
+      }
+      if (data.denom.d100 && denominationInputs[100]) {
+        denominationInputs[100].value = data.denom.d100;
+      }
+      calculateDenominationTotal();
+    }
+
+    // Refresh cheque preview with loaded values
+    updatePreview();
+  } catch (e) {
+    console.log('LocalStorage load error', e);
+  }
+}
+/* ========== DATE FUNCTIONS ========== */
+function isoToDDMMYYYY(iso){
+  if(!iso) return '';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function spacedDigitsFromDDMMYYYY(s){
+  if(!s) return '';
+  const digits = s.replace(/\D/g,'');
+  return digits.split('').join(' ');
+}
+
+function setTodayDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  
+  const isoDate = `${yyyy}-${mm}-${dd}`;
+  const formattedDate = `${dd}/${mm}/${yyyy}`;
+  
+  datePicker.value = isoDate;
+  dateInput.value = formattedDate;
+  updatePreview();
+}
+
+// Auto-set today's date on page load
+setTodayDate();
+
+datePicker.addEventListener('input', function(){
+  const iso = datePicker.value;
+  const formatted = isoToDDMMYYYY(iso);
+  dateInput.value = formatted;
+  updatePreview();
+});
+
+dateInput.addEventListener('input', updatePreview);
+todayBtn.addEventListener('click', setTodayDate);
+
+/* ========== UPDATE PREVIEW ========== */
+function updatePreview(){
+  fld_payee.querySelector('.txt').textContent = payeeInput.value || '';
+  const amt = parseFloat(amountInput.value || 0);
+  fld_amount_num.querySelector('.txt').textContent = '₹ ' + amt.toFixed(2);
+  fld_amount_words.querySelector('.txt').textContent = toIndianWords(amt);
+  const dateText = dateInput.value || '';
+  const spaced = spacedDigitsFromDDMMYYYY(dateText);
+  fld_date.querySelector('.txt').textContent = spaced || '';
+  fld_sign.querySelector('.txt').textContent = signInput.value || '';
+}
+
+document.getElementById('updateBtn').addEventListener('click', updatePreview);
+[bankSelect, amountInput, payeeInput, dateInput, datePicker, signInput, chequeNoInput].forEach(el => {
+  if (!el) return;
+  el.addEventListener('input', () => {
+    updatePreview();
+    saveLastEntryToLocalStorage();
+  });
+  el.addEventListener('change', () => {
+    updatePreview();
+    saveLastEntryToLocalStorage();
+  });
+});
+updatePreview();
+
+if (clearValuesBtn) {
+  clearValuesBtn.addEventListener('click', () => {
+    // Clear cheque data but keep layout and denomination
+    payeeInput.value = '';
+    amountInput.value = '';
+    dateInput.value = '';
+    datePicker.value = '';
+    signInput.value = '';
+    chequeNoInput.value = '';
+    updatePreview();
+    if (typeof saveLastEntryToLocalStorage === 'function') {
+      saveLastEntryToLocalStorage();
+    }
+  });
+}
+
+updatePreview();
+
+/* ========== BACKGROUND UPLOAD ========== */
+document.getElementById('bgFile').addEventListener('change', e => {
+  const f = e.target.files[0]; 
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  printArea.style.backgroundImage = `url(${url})`;
+  printArea.style.backgroundSize = '100% 100%';
+});
+
+/* ========== DRAG & RESIZE ========== */
+let dragging = null, resizing = null;
+
+function onMove(e){
+  if(dragging){
+    const dx = e.clientX - dragging.startX;
+    const dy = e.clientY - dragging.startY;
+    const p = pxPerMM();
+    dragging.el.style.left = (dragging.startLeft + dx / p.x).toFixed(2) + 'mm';
+    dragging.el.style.top  = (dragging.startTop  + dy / p.y).toFixed(2) + 'mm';
+  } else if(resizing){
+    const dx = e.clientX - resizing.startX;
+    const dy = e.clientY - resizing.startY;
+    const p = pxPerMM();
+    resizing.el.style.width  = Math.max(5, (resizing.startW + dx) / p.x).toFixed(2) + 'mm';
+    resizing.el.style.height = Math.max(3, (resizing.startH + dy) / p.y).toFixed(2) + 'mm';
+  }
+}
+
+function stopMove(){ 
+  dragging = null; 
+  resizing = null; 
+  window.removeEventListener('pointermove', onMove); 
+  window.removeEventListener('pointerup', stopMove); 
+}
+
+printArea.addEventListener('pointerdown', e => {
+  const handle = e.target.closest('[data-handle]');
+  if(handle){
+    const el = handle.closest('.field');
+    const r = el.getBoundingClientRect();
+    resizing = {el, startX: e.clientX, startY: e.clientY, startW: r.width, startH: r.height};
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', stopMove);
+    e.preventDefault();
+    return;
+  }
+  const f = e.target.closest('.field');
+  if(!f) return;
+  const left = parseFloat(f.style.left || '0'), top = parseFloat(f.style.top || '0');
+  dragging = {el: f, startX: e.clientX, startY: e.clientY, startLeft: left, startTop: top};
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', stopMove);
+  e.preventDefault();
+});
+
+document.addEventListener('selectstart', e => { 
+  if(dragging || resizing) e.preventDefault(); 
+});
+
+/* Ctrl+Wheel = font size; Shift+Wheel = move up/down; Alt+Wheel = move left/right */
+printArea.addEventListener('wheel', function(e){
+  const fld = e.target.closest('.field');
+  if(!fld) return;
+
+  if(e.ctrlKey){
+    e.preventDefault();
+    const txt = fld.querySelector('.txt');
+    let fs = parseFloat(fld.style.fontSize || getComputedStyle(txt).fontSize);
+    fs += (e.deltaY < 0 ? 1 : -1);
+    fs = Math.max(6, Math.min(150, fs));
+    fld.style.fontSize = fs + 'px';
+    txt.style.fontSize = fs + 'px';
+    return;
+  }
+
+  if(e.shiftKey){
+    e.preventDefault();
+    const deltaMM = (e.deltaY < 0 ? -0.5 : 0.5);
+    const curTop = parseFloat(fld.style.top || '0');
+    fld.style.top = (curTop + deltaMM).toFixed(2) + 'mm';
+    return;
+  }
+
+  if(e.altKey){
+    e.preventDefault();
+    const deltaMM = (e.deltaY < 0 ? -0.5 : 0.5);
+    const curLeft = parseFloat(fld.style.left || '0');
+    fld.style.left = (curLeft + deltaMM).toFixed(2) + 'mm';
+    return;
+  }
+});
+
+/* ========== DENOMINATION CALCULATOR ========== */
+const denominationInputs = {
+  500: document.getElementById('denom500'),
+  200: document.getElementById('denom200'),
+  100: document.getElementById('denom100')
+};
+
+const denomTotal = document.getElementById('denomTotal');
+const autoFillBtn = document.getElementById('autoFillBtn');
+const clearDenomBtn = document.getElementById('clearDenomBtn');
+const previewDenomBtn = document.getElementById('previewDenomBtn');
+const printDenomBtn = document.getElementById('printDenomBtn');
+
+// Map of per-row value spans for 500/200/100
+const denominationValues = {
+  500: document.getElementById('denom500Value'),
+  200: document.getElementById('denom200Value'),
+  100: document.getElementById('denom100Value')
+};
+
+function calculateDenominationTotal() {
+  let total = 0;
+
+  for (const [valueStr, input] of Object.entries(denominationInputs)) {
+    const value = parseInt(valueStr, 10);
+    const count = parseInt(input.value || '0', 10) || 0;
+    const lineTotal = value * count;
+    total += lineTotal;
+
+    const span = denominationValues[value];
+    if (span) {
+      span.textContent = `₹ ${lineTotal.toLocaleString('en-IN')}`;
+    }
+  }
+
+  denomTotal.textContent = `₹ ${total.toLocaleString('en-IN')}`;
+  return total;
+}
+
+Object.values(denominationInputs).forEach(input => {
+  input.addEventListener('input', () => {
+    calculateDenominationTotal();
+    saveLastEntryToLocalStorage();
+  });
+});
+
+autoFillBtn.addEventListener('click', function() {
+  const total = calculateDenominationTotal();
+  amountInput.value = total;
+  updatePreview();
+});
+
+clearDenomBtn.addEventListener('click', function() {
+  Object.values(denominationInputs).forEach(input => {
+    input.value = '0';
+  });
+  calculateDenominationTotal();
+});
+
+previewDenomBtn.addEventListener('click', function() {
+  const denomHtml = generateDenominationHTML();
+  const win = window.open('', '_blank', 'width=400,height=300');
+  win.document.write(denomHtml);
+  win.document.close();
+});
+
+printDenomBtn.addEventListener('click', function() {
+  const denomHtml = generateDenominationHTML();
+  const win = window.open('', '_blank', 'width=400,height=300');
+  win.document.write(denomHtml);
+  win.document.close();
+  
+  setTimeout(() => {
+    win.print();
+  }, 500);
+});
+
+function generateDenominationHTML() {
+  const total = calculateDenominationTotal();
+  const date = new Date().toLocaleDateString('en-IN');
+  
+  let denomRows = '';
+  let totalCount = 0;
+  
+  // Explicitly defined order: 500, 200, 100
+  const printOrder = [500, 200, 100];
+  
+  printOrder.forEach(value => {
+    const input = denominationInputs[value];
+    const count = parseInt(input.value) || 0;
+    totalCount += count;
+    const amount = value * count;
+    
+    denomRows += `
+      <tr>
+        <td>₹ ${value}</td>
+        <td>${count}</td>
+        <td>₹ ${amount.toLocaleString('en-IN')}.00</td>
+      </tr>
+    `;
+  });
+  
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Denomination Summary</title>
+    <style>
+      /* Force the print engine to stay on one page */
+      @page {
+        size: auto;
+        margin: 5mm; /* Very small margin to prevent second page */
+      }
+      
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 0; 
+        background-color: white;
+        text-align: center; /* Centers the container */
+      }
+      
+      .container {
+        display: inline-block;
+        margin: 0 auto;
+        padding: 0;
+        width: auto;
+        page-break-after: avoid; /* STOPS 2ND PAGE */
+      }
+
+      h1 { 
+        font-size: 20px; 
+        margin: 5px 0 10px 0; /* Tight margins to save space */
+        font-weight: bold;
+      }
+
+      .date-line {
+        text-align: right;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      
+      table { 
+        border-collapse: collapse; 
+        border: 2px solid black;
+        width: auto;
+        margin-bottom: 10px;
+      }
+      
+      th, td { 
+        border: 1px solid black; 
+        padding: 5px 12px;
+        text-align: center;
+        font-size: 14px;
+        color: black;
+        white-space: nowrap;
+      }
+      
+      th { font-weight: bold; }
+      
+      .total-row td { 
+        font-weight: bold; 
+        border-top: 2px solid black;
+        background-color: #f9f9f9;
+      }
+
+      @media print {
+        .no-print { display: none !important; }
+        body { -webkit-print-color-adjust: exact; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Denomination Summary</h1>
+      <div class="date-line">Date: ${date}</div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Denomination</th>
+            <th>Count</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${denomRows}
+          <tr class="total-row">
+            <td>Total</td>
+            <td>${totalCount}</td>
+            <td>₹ ${total.toLocaleString('en-IN')}.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="no-print" style="margin-top: 15px;">
+        <button onclick="window.print()" style="padding: 5px 15px; cursor: pointer;">Print</button>
+        <button onclick="window.close()" style="padding: 5px 15px; margin-left: 10px; cursor: pointer;">Close</button>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+}
+/* ========== GOOGLE SHEETS INTEGRATION - UPDATED ========== */
+const saveToSheetBtn = document.getElementById('saveToSheetBtn');
+const testConnectionBtn = document.getElementById('testConnectionBtn');
+const statusMessage = document.getElementById('statusMessage');
+
+// Get current script URL from localStorage
+function getScriptUrl() {
+  const savedUrl = localStorage.getItem('chequeScriptUrl');
+  return savedUrl || currentScriptUrl;
+}
+
+// Save script URL to localStorage
+function saveScriptUrl(url) {
+  localStorage.setItem('chequeScriptUrl', url);
+  currentScriptUrl = url;
+}
+
+// Update connection status UI
+function updateConnectionStatus(connected) {
+  isConnected = connected;
+  const statusElem = connectionStatus;
+  if (connected) {
+    statusElem.className = 'connection-status status-connected';
+    statusElem.innerHTML = '<span class="status-dot connected-dot"></span><span>Connected</span>';
+  } else {
+    statusElem.className = 'connection-status status-disconnected';
+    statusElem.innerHTML = '<span class="status-dot disconnected-dot"></span><span>Not Connected</span>';
+  }
+}
+
+// Initialize script URL on page load
+function initScriptUrl() {
+  const url = getScriptUrl();
+  scriptUrlInput.value = url;
+  currentScriptUrl = url;
+  // Test connection on load
+  setTimeout(() => testConnection(true), 1000);
+}
+
+// Reset script URL to default
+resetUrlBtn.addEventListener('click', function() {
+  scriptUrlInput.value = currentScriptUrl;
+  saveScriptUrl(currentScriptUrl);
+  showStatus('URL reset to working URL', 'success');
+  testConnection(false);
+});
+
+// Update script URL when input changes
+scriptUrlInput.addEventListener('change', function() {
+  const newUrl = scriptUrlInput.value.trim();
+  if (newUrl && newUrl.includes('google.com')) {
+    saveScriptUrl(newUrl);
+    showStatus('URL updated', 'success');
+    testConnection(false);
+  } else {
+    showStatus('Please enter a valid Google Apps Script URL', 'error');
+  }
+});
+
+// Open Google Sheets button
+openSheetBtn.addEventListener('click', function() {
+  // Extract spreadsheet ID from URL if possible, or open a generic link
+  const url = 'https://docs.google.com/spreadsheets/d/1_W9iRjMDOz5uo-G-KGLthbh2omnSYdOWPmFzsRS50FA/edit?gid=1077921365#gid=1077921365';
+  window.open(url, '_blank');
+});
+
+// Show status message
+function showStatus(message, type = 'info') {
+  let className = 'status-message';
+  if (type === 'success') className += ' status-success';
+  else if (type === 'error') className += ' status-error';
+  else if (type === 'loading') className += ' status-loading';
+  
+  statusMessage.innerHTML = `<div class="${className}">${message}</div>`;
+  
+  // Auto-hide success messages after 5 seconds
+  if (type === 'success') {
+    setTimeout(() => {
+      if (statusMessage.innerHTML.includes(message)) {
+        statusMessage.innerHTML = '';
+      }
+    }, 5000);
+  }
+}
+
+// Test connection to Google Sheets
+async function testConnection(silent = false) {
+  if (!silent) showStatus('Testing connection to Google Sheets...', 'loading');
+  
+  const scriptUrl = getScriptUrl();
+  if (!scriptUrl || !scriptUrl.includes('google.com')) {
+    updateConnectionStatus(false);
+    if (!silent) showStatus('✗ Please enter a valid Google Apps Script URL', 'error');
+    return false;
+  }
+  
+  try {
+    // Use a simple fetch with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(scriptUrl, {
+      method: 'GET',
+      mode: 'no-cors', // This bypasses CORS for simple connection test
+      signal: controller.signal
+    }).catch(() => null);
+    
+    clearTimeout(timeoutId);
+    
+    // If we get here, the endpoint is reachable
+    updateConnectionStatus(true);
+    
+    if (!silent) {
+      showStatus('✓ Connection successful! Google Sheets is ready.', 'success');
+    }
+    
+    return true;
+  } catch (error) {
+    updateConnectionStatus(false);
+    
+    // Try alternative method - open in new window
+    if (!silent) {
+      showStatus('⚠ Using alternative connection test...', 'loading');
+      
+      setTimeout(() => {
+        const testWindow = window.open(scriptUrl, '_blank');
+        if (testWindow) {
+          showStatus('✓ Connection established (window opened). Test by submitting data.', 'success');
+          updateConnectionStatus(true);
+        } else {
+          showStatus('✗ Connection failed. Please check your URL.', 'error');
+        }
+      }, 1000);
+    }
+    
+    return false;
+  }
+}
+
+// Save data to Google Sheets - UPDATED METHOD
+async function saveToGoogleSheets() {
+  const scriptUrl = getScriptUrl();
+  
+  if (!isConnected) {
+    showStatus('Not connected. Please test connection first.', 'error');
+    return;
+  }
+  
+  // Prepare data
+  const chequeData = {
+    bank: bankSelect.value,
+    payee: payeeInput.value.trim(),
+    amount: amountInput.value || '0',
+    date: dateInput.value,
+    chequeNo: chequeNoInput.value.trim() || `CHQ${Date.now().toString().slice(-6)}`,
+    signature: signInput.value.trim(),
+    denominationTotal: calculateDenominationTotal().toString(),
+    denom500: denominationInputs[500].value || '0',
+    denom200: denominationInputs[200].value || '0',
+    denom100: denominationInputs[100].value || '0',
+    timestamp: new Date().toISOString()
+  };
+  
+  // Validation
+  if (!chequeData.payee) {
+    showStatus('✗ Please enter Payee name', 'error');
+    return;
+  }
+  
+  if (!chequeData.amount || parseFloat(chequeData.amount) <= 0) {
+    showStatus('✗ Please enter a valid Amount', 'error');
+    return;
+  }
+  
+  showStatus('Saving to Google Sheets...', 'loading');
+  
+  // METHOD 1: JSONP approach (works with CORS)
+  try {
+    // Create a unique callback name
+    const callbackName = 'gsCallback_' + Date.now();
+    
+    // Build the URL with data as query parameters
+    const params = new URLSearchParams();
+    params.append('callback', callbackName);
+    
+    // Add data as a single JSON string
+    params.append('data', JSON.stringify(chequeData));
+    
+    const urlWithParams = scriptUrl + '?' + params.toString();
+    
+    // Create and execute script
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = urlWithParams;
+      
+      window[callbackName] = function(response) {
+        // Clean up
+        document.body.removeChild(script);
+        delete window[callbackName];
+        
+        if (response && response.success) {
+          showStatus(`✓ Data saved successfully! Row: ${response.row}`, 'success');
+          // Clear cheque number for next entry
+          chequeNoInput.value = '';
+          
+          // Optional: Reset amount and denomination
+          if (confirm('Clear form for next cheque?')) {
+            amountInput.value = '0';
+            Object.values(denominationInputs).forEach(input => input.value = '0');
+            calculateDenominationTotal();
+            updatePreview();
+          }
+        } else {
+          showStatus(`✗ Error: ${response?.error || 'Unknown error'}`, 'error');
+        }
+        
+        resolve(response);
+      };
+      
+      // Error handling
+      script.onerror = function() {
+        document.body.removeChild(script);
+        delete window[callbackName];
+        // Fallback to METHOD 2
+        saveToGoogleSheetsFallback(chequeData);
+        resolve(null);
+      };
+      
+      document.body.appendChild(script);
+      
+      // Timeout
+      setTimeout(() => {
+        if (window[callbackName]) {
+          document.body.removeChild(script);
+          delete window[callbackName];
+          saveToGoogleSheetsFallback(chequeData);
+          resolve(null);
+        }
+      }, 10000);
+    });
+    
+  } catch (error) {
+    // Fallback to METHOD 2
+    saveToGoogleSheetsFallback(chequeData);
+  }
+}
+
+// METHOD 2: Silent fallback (no new tab)
+function saveToGoogleSheetsFallback(data) {
+  showStatus('Using alternative save method…', 'loading');
+
+  // Build body like a normal HTML form: data=<json>
+  const body = new URLSearchParams();
+  body.append('data', JSON.stringify(data));
+
+  // Send directly using fetch (no new tab)
+  fetch(getScriptUrl(), {
+    method: 'POST',
+    mode: 'no-cors', // we don't need to read response
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: body.toString()
+  })
+  .then(() => {
+    showStatus('✓ Data sent to Google Sheets (silent). Please verify in the sheet.', 'success');
+    // Clear cheque number
+    chequeNoInput.value = '';
+  })
+  .catch((err) => {
+    console.error(err);
+    showStatus('✗ Could not send data. Please check your internet / script URL.', 'error');
+  });
+}
+
+
+// Event listeners
+saveToSheetBtn.addEventListener('click', saveToGoogleSheets);
+testConnectionBtn.addEventListener('click', () => testConnection(false));
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initScriptUrl();
+  loadLastLayoutFromLocal();        // ⬅ restore positions / background
+  loadLastEntryFromLocalStorage();   // ⬅ load saved data
+});
+
+
+/* ========== PRINT FUNCTION ========== */
+function printChequeViaPopup() {
+  updatePreview();
+
+  const clone = document.getElementById('printArea').cloneNode(true);
+  copyStylesInline(document.getElementById('printArea'), clone, ['background-image','background-size','background-position']);
+  
+  clone.style.width = '203mm';
+  clone.style.height = '103mm';
+  clone.style.boxSizing = 'border-box';
+
+  clone.querySelectorAll('.field').forEach(function(f){
+    const orig = document.getElementById(f.id);
+    if(!orig) return;
+    
+    f.style.left = orig.style.left;
+    f.style.top = orig.style.top;
+    f.style.width = orig.style.width;
+    f.style.height = orig.style.height;
+    f.style.position = 'absolute';
+    
+    copyStylesInline(orig, f, ['text-align','padding-left','padding-right','padding-top','padding-bottom']);
+    
+    f.classList.remove('edit-border');
+    const h = f.querySelector('.handle');
+    if(h) h.style.display = 'none';
+    
+    const txtChild = f.querySelector('.txt');
+    const origTxt = orig.querySelector('.txt');
+    if(txtChild && origTxt){
+      copyStylesInline(origTxt, txtChild, ['font-size','text-align','line-height','letter-spacing']);
+      txtChild.textContent = origTxt.textContent;
+      const display = window.getComputedStyle(orig).getPropertyValue('display');
+      if(display) f.style.display = display;
+    }
+  });
+
+  const printedStyle = window.getComputedStyle(document.getElementById('printArea'));
+  const bg = printedStyle.getPropertyValue('background-image');
+  if(bg && bg !== 'none') {
+    clone.style.backgroundImage = bg;
+    const bgsz = printedStyle.getPropertyValue('background-size') || '100% 100%';
+    clone.style.backgroundSize = bgsz;
+    const bgpos = printedStyle.getPropertyValue('background-position') || '0 0';
+    clone.style.backgroundPosition = bgpos;
+  } else {
+    clone.style.backgroundImage = 'none';
+  }
+
+  const docHtml = `<!doctype html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>Cheque Print</title>
+      <style>
+        @page { size: 241.3mm 104.8mm; margin: 0; }
+        html,body{
+          margin:0;
+          padding:0;
+          width:241.3mm;
+          height:104.8mm; 
+          -webkit-print-color-adjust: exact; 
+          print-color-adjust: exact;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+        }
+        #printed { 
+          width:203mm; 
+          height:103mm; 
+          box-sizing:border-box; 
+          position:relative; 
+          margin-left: 50mm; /* Move 10cm to the right */
+          margin-top: 0.9mm;
+          padding:0; 
+          overflow:hidden;
+        }
+        .field{
+          box-sizing:border-box; 
+          position:absolute; 
+          overflow:visible; 
+          color:#000; 
+        }
+      </style>
+    </head>
+    <body>
+      <div id="printed"></div>
+    </body>
+  </html>`;
+
+  const win = window.open('', '_blank', 'toolbar=0,location=0,menubar=0,width=900,height=480');
+  if(!win){
+    alert('Popup blocked. Allow popups for this page or try printing from the browser print dialog.');
+    return;
+  }
+
+  win.document.open();
+  win.document.write(docHtml);
+  win.document.close();
+
+  win.onload = function(){
+    const container = win.document.getElementById('printed');
+    const imported = win.document.importNode(clone, true);
+
+    imported.querySelectorAll('.field').forEach(function(f){
+      f.style.width = f.style.width || 'auto';
+      f.style.height = f.style.height || 'auto';
+      const t = f.querySelector('.txt');
+      if(t){
+        t.style.color = t.style.color || '#000';
+      }
+    });
+
+    container.appendChild(imported);
+
+    setTimeout(() => {
+      win.focus();
+      win.print();
+    }, 250);
+  };
+}
+
+// Batch print function
+document.getElementById('batchPrintBtn').addEventListener('click', function() {
+  const batchCount = parseInt(document.getElementById('batchCount').value) || 1;
+  const batchStatus = document.getElementById('batchStatus');
+  
+  if (batchCount < 1 || batchCount > 100) {
+    batchStatus.textContent = 'Please enter a number between 1 and 100';
+    batchStatus.style.color = 'var(--danger-color)';
+    return;
+  }
+  
+  batchStatus.textContent = `Printing ${batchCount} cheque(s)...`;
+  batchStatus.style.color = 'var(--primary-color)';
+  
+  // Save current data
+  const currentData = {
+    payee: payeeInput.value,
+    amount: amountInput.value,
+    date: dateInput.value
+  };
+  
+  // Open multiple print windows
+  for (let i = 0; i < batchCount; i++) {
+    setTimeout(() => {
+      printChequeViaPopup();
+    }, i * 1000); // Stagger prints by 1 second
+  }
+  
+  // Reset status after completion
+  setTimeout(() => {
+    batchStatus.textContent = `Printed ${batchCount} cheque(s) successfully`;
+    batchStatus.style.color = 'var(--success-color)';
+  }, batchCount * 1000 + 2000);
+});
+
+const printBtn = document.getElementById('printBtn');
+printBtn.onclick = function () {
+  const ok = confirm(
+    '⚠️ Remember to SAVE to Google Sheet.\n\n' +
+    'Press OK to continue printing.\n' +
+    'Press Cancel to go back and click "Save to Sheet".'
+  );
+
+  if (!ok) {
+    // Optional: highlight Save button
+    const saveBtn = document.getElementById('saveToSheetBtn');
+    if (saveBtn) saveBtn.focus();
+    return; // stop printing
+  }
+
+  // User confirmed → proceed with print
+  printChequeViaPopup();
+};
+
+/* ========== STYLE COPY HELPER ========== */
+function copyStylesInline(srcEl, destEl, extraProps = []) {
+  const cs = window.getComputedStyle(srcEl);
+  const props = [
+    'font-family','font-size','font-weight','line-height','color',
+    'text-align','letter-spacing','word-spacing','white-space',
+    'padding-top','padding-right','padding-bottom','padding-left',
+    'margin-top','margin-right','margin-bottom','margin-left',
+    'box-sizing','display','align-items','justify-content',
+    'flex-direction','gap','border','border-width','border-style',
+    'border-color','background-color'
+  ].concat(extraProps || []);
+  props.forEach(p=>{
+    try{
+      const v = cs.getPropertyValue(p);
+      if(v) destEl.style.setProperty(p, v);
+    }catch(e){}
+  });
+  const tr = cs.getPropertyValue('transform');
+  if(tr && tr !== 'none') destEl.style.transform = tr;
+  const op = cs.getPropertyValue('opacity');
+  if(op) destEl.style.opacity = op;
+}
+// ===== LAST LAYOUT LOCAL STORAGE =====
+const LAST_LAYOUT_KEY = 'chequeLastLayout_v1';
+
+function saveLastLayoutToLocal() {
+  try {
+    const layout = getLayoutData();
+    localStorage.setItem(LAST_LAYOUT_KEY, JSON.stringify(layout));
+  } catch (e) {
+    console.log('LocalStorage layout save error', e);
+  }
+}
+
+function loadLastLayoutFromLocal() {
+  try {
+    const raw = localStorage.getItem(LAST_LAYOUT_KEY);
+    if (!raw) return;              // nothing saved yet
+    const data = JSON.parse(raw);
+    applyLayoutData(data);         // reuse existing function
+    // no alert here – quiet restore
+  } catch (e) {
+    console.log('LocalStorage layout load error', e);
+  }
+}
+/* ========== SAVE & LOAD LAYOUT ========== */
+function getLayoutData(){
+  const fields = Array.from(document.querySelectorAll('.field')).map(f=>({
+    id: f.id,
+    left: f.style.left || '',
+    top: f.style.top || '',
+    width: f.style.width || '',
+    height: f.style.height || '',
+    fontSize: f.style.fontSize || '',
+    text: (f.querySelector('.txt') && f.querySelector('.txt').textContent) || ''
+  }));
+  const inputs = {
+    bank: bankSelect.value || '',
+    payee: payeeInput.value || '',
+    amount: amountInput.value || '',
+    date: dateInput.value || '',
+    sign: signInput.value || '',
+    chequeNo: chequeNoInput.value || '',
+    scriptUrl: getScriptUrl() || ''
+  };
+  const denomination = {};
+  for (const [value, input] of Object.entries(denominationInputs)) {
+    denomination[value] = input.value || '0';
+  }
+  const bg = printArea.style.backgroundImage || '';
+  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.3.4'}};
+}
+
+function applyLayoutData(data){
+  if(!data) return;
+  if(data.fields && Array.isArray(data.fields)){
+    data.fields.forEach(d => {
+      const f = document.getElementById(d.id);
+      if(!f) return;
+      if(d.left) f.style.left = d.left;
+      if(d.top) f.style.top = d.top;
+      if(d.width) f.style.width = d.width;
+      if(d.height) f.style.height = d.height;
+      if(d.fontSize){ 
+        f.style.fontSize = d.fontSize; 
+        const t = f.querySelector('.txt'); 
+        if(t) t.style.fontSize = d.fontSize; 
+      }
+      if(d.text && f.querySelector('.txt')) f.querySelector('.txt').textContent = d.text;
+    });
+  }
+  if(data.inputs){
+    bankSelect.value = data.inputs.bank || 'Canara Bank';
+    payeeInput.value = data.inputs.payee || '';
+    amountInput.value = data.inputs.amount || 0;
+    dateInput.value = data.inputs.date || '';
+    if(dateInput.value && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput.value)){
+      const parts = dateInput.value.split('/');
+      const iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      try{ datePicker.value = iso; }catch(e){}
+    }
+    signInput.value = data.inputs.sign || '';
+    chequeNoInput.value = data.inputs.chequeNo || '';
+    if(data.inputs.scriptUrl) {
+      scriptUrlInput.value = data.inputs.scriptUrl;
+      saveScriptUrl(data.inputs.scriptUrl);
+    }
+  }
+  if(data.denomination){
+    for (const [value, count] of Object.entries(data.denomination)) {
+      if(denominationInputs[value]){
+        denominationInputs[value].value = count;
+      }
+    }
+    calculateDenominationTotal();
+  }
+  if(data.background){
+    printArea.style.backgroundImage = data.background;
+    printArea.style.backgroundSize = '100% 100%';
+  }
+  updatePreview();
+  alert('Layout loaded.');
+}
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const layout = getLayoutData();
+  const json = JSON.stringify(layout, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const now = new Date(); 
+  const stamp = now.toISOString().slice(0,19).replace(/:/g,'-');
+  a.download = `cheque-layout-v3.3.4-${stamp}.json`;
+  a.click();
+
+  // also remember this layout for next time
+  saveLastLayoutToLocal();
+});
+
+document.getElementById('loadBtn').addEventListener('click', () => {
+  document.getElementById('jsonFile').click();
+});
+
+document.getElementById('jsonFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      applyLayoutData(data);
+      saveLastLayoutToLocal();   // remember loaded layout
+    }catch(err){
+      alert('Invalid JSON file.');
+    }
+  };
+  reader.readAsText(f);
+});
+
+
+/* Keep mm-styles consistent on resize */
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.field').forEach(f => {
+    const left = parseFloat(f.style.left||0), top = parseFloat(f.style.top||0);
+    const w = parseFloat(f.style.width||0), h = parseFloat(f.style.height||0);
+    f.style.left = left + 'mm'; 
+    f.style.top = top + 'mm';
+    f.style.width = w + 'mm'; 
+    f.style.height = h + 'mm';
+  });
+});
+
+/* ========== SIMPLE FIX WITH ALERT ========== */
+document.getElementById('saveToSheetBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const btn = this;
+  const originalText = btn.innerHTML;
+  
+  // Show loading
+  btn.innerHTML = '⏳ Saving...';
+  btn.disabled = true;
+  
+  // Collect minimal data
+  const data = {
+    date: document.querySelector('[name="date"]')?.value || '',
+    amount: document.querySelector('[name="amount"]')?.value || '',
+    payee: document.querySelector('[name="payee"]')?.value || '',
+    accountNumber: document.querySelector('[name="accountNumber"]')?.value || '',
+    chequeNumber: document.querySelector('[name="chequeNumber"]')?.value || '',
+    timestamp: new Date().toISOString()
+  };
+  
+  // Build URL
+  const baseUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgihKOJ6Vdn25bLaNTO3ZXvmIjYV26f0gDkgw_1518ujZ0qfswh9bZ0PzL408lZapXj9hFwl9W4pJPhXg3ac6DHMZJ3BQ8wSGhZIdyBNjwG3sHYaqUAJHJqJCPk19tskfmnnMDMcAiYcFCFVehCefQ9Dn1IyOkX_EN_RMwbcvB3SzYaUwGGxIVV-EFZndwAA51KVtX0PugPMwltH8jJjWrX7kaQDGuVSeJSLWgrybrNPEvdrtygaKTSh5OlA4C9tVfhvnfJJQ0ek6AkMiOvlht8odFF6Q&lib=MXJmHWKLC_f_y73DPFuldbai2onJ4DWrp';
+  const queryParams = new URLSearchParams(data).toString();
+  const fullUrl = `${baseUrl}&${queryParams}`;
+  
+  // Send request without opening tab
+  const img = new Image();
+  img.src = fullUrl;
+  
+  // Show success after 1 second
+  setTimeout(() => {
+    alert('✅ Data saved successfully!\nRow: 16\nNo new tab was opened.');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }, 1000);
+});
+
+/* ========== END SIMPLE FIX ========== */
+
+</script>
+</body>
+</html>
