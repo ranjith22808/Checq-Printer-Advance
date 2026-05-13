@@ -161,6 +161,28 @@
   .batch-row{display:flex;gap:8px;margin-bottom:8px}
   .batch-input{flex:1}
   .batch-count{font-size:12px;color:#666;margin-top:4px}
+
+  /* Floating install button */
+  .install-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: transform 0.2s;
+  }
+  .install-btn:hover {
+    transform: scale(1.05);
+    background: var(--secondary-color);
+  }
 </style>
 </head>
 <body>
@@ -244,13 +266,13 @@
         <span id="denomTotal">₹ 0</span>
       </div>
 
-      <!-- NEW: Target Amount Row -->
+      <!-- Target Amount Row -->
       <div class="target-row">
         <span>🎯 Target Amount:</span>
         <span id="targetAmountDisplay">₹ 0.00</span>
       </div>
 
-      <!-- NEW: Difference Amount Row (dynamically colored) -->
+      <!-- Difference Amount Row (dynamically colored) -->
       <div class="difference-row" id="differenceRow">
         <span>📊 Difference:</span>
         <span id="differenceAmountDisplay">₹ 0.00</span>
@@ -338,13 +360,16 @@
   </div>
 </div>
 
+<!-- Floating Install Button -->
+<button id="installAppBtn" class="install-btn" style="display:none;">📲 Install App</button>
+
 <script>
-/* ========== PWA SETUP (MANIFEST + SERVICE WORKER) ========== */
+/* ========== PWA SETUP with working install prompt ========== */
 (function() {
-  // Check if we are on localhost or HTTPS (required for PWA install)
+  // Check if we are on localhost or HTTPS (required for PWA)
   const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if (!isSecure) {
-    console.warn('PWA install requires HTTPS or localhost. Running in insecure context, install may not work.');
+    console.warn('PWA install requires HTTPS or localhost. Install button may not work.');
   }
 
   // Register service worker that serves manifest.json and caches the page
@@ -380,7 +405,7 @@
 
       self.addEventListener('fetch', event => {
         const url = new URL(event.request.url);
-        // Serve the manifest.json dynamically
+        // Serve manifest.json dynamically
         if (url.pathname === '/manifest.json' || url.pathname.endsWith('manifest.json')) {
           event.respondWith(
             new Response(JSON.stringify(MANIFEST), {
@@ -413,9 +438,42 @@
       console.log('Service Worker registered for PWA');
     }).catch(err => console.log('SW registration failed', err));
   }
+
+  // Handle install prompt
+  let deferredPrompt;
+  const installBtn = document.getElementById('installAppBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    // Show the install button
+    installBtn.style.display = 'block';
+    console.log('beforeinstallprompt fired');
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    // We've used the prompt, and can't use it again, throw it away
+    deferredPrompt = null;
+    // Hide the install button after install is attempted
+    installBtn.style.display = 'none';
+  });
+
+  // Optionally hide button if app is already installed
+  window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+    console.log('PWA installed successfully');
+  });
 })();
 
-/* ========== ORIGINAL APPLICATION CODE (completely unchanged) ========== */
+/* ========== ORIGINAL APPLICATION CODE (completely unchanged from working version) ========== */
 const printArea = document.getElementById('printArea');
 let currentScriptUrl = 'https://script.google.com/macros/s/AKfycbyPf3wJEx1JsCTYxsQMNbg9czuQj_TeaNDOrHRGvgUy6vfZZbFHBFmTFm56g7YW0B7B/exec';
 let isConnected = false;
@@ -827,7 +885,7 @@ if(printDenomBtn) {
   });
 }
 
-/* ========== UPDATED: CENTERED DENOMINATION TABLE PRINT LAYOUT ========== */
+/* ========== CENTERED DENOMINATION TABLE PRINT LAYOUT (already centered) ========== */
 function generateDenominationHTML() {
   const total = calculateDenominationTotal();
   const date = new Date().toLocaleDateString('en-IN');
