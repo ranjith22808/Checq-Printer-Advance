@@ -9,7 +9,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checq Printer">
-<link rel="manifest" href="manifest.json">
+<!-- Manifest as Data URI (works in modern browsers) -->
+<link rel="manifest" href="data:application/manifest+json,{
+  %22name%22:%22Checq%20Printer%20Advance%22,
+  %22short_name%22:%22ChecqPrinter%22,
+  %22description%22:%22Professional%20Cheque%20Printing%20Application%22,
+  %22start_url%22:%22.%22,
+  %22display%22:%22standalone%22,
+  %22theme_color%22:%22%234361ee%22,
+  %22background_color%22:%22%23ffffff%22,
+  %22icons%22:[
+    {
+      %22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20fill='%234361ee'/%3E%3Ctext%20x='50'%20y='67'%20font-size='50'%20text-anchor='middle'%20fill='white'%3E📄%3C/text%3E%3C/svg%3E%22,
+      %22sizes%22:%22any%22,
+      %22type%22:%22image/svg+xml%22,
+      %22purpose%22:%22any%20maskable%22
+    }
+  ]
+}">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234361ee'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E">
 <style>
   :root{ 
@@ -364,116 +381,32 @@
 <button id="installAppBtn" class="install-btn" style="display:none;">📲 Install App</button>
 
 <script>
-/* ========== PWA SETUP with working install prompt ========== */
-(function() {
-  // Check if we are on localhost or HTTPS (required for PWA)
-  const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  if (!isSecure) {
-    console.warn('PWA install requires HTTPS or localhost. Install button may not work.');
-  }
+/* ========== PWA INSTALL PROMPT (works with data URI manifest) ========== */
+let deferredPrompt;
+const installBtn = document.getElementById('installAppBtn');
 
-  // Register service worker that serves manifest.json and caches the page
-  if ('serviceWorker' in navigator) {
-    const swCode = `
-      const CACHE_NAME = 'cheq-printer-v3.3.5';
-      const MANIFEST = {
-        name: "Checq Printer Advance",
-        short_name: "ChecqPrinter",
-        description: "Professional Cheque Printing Application",
-        start_url: "./",
-        display: "standalone",
-        theme_color: "#4361ee",
-        background_color: "#ffffff",
-        icons: [
-          {
-            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234361ee'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "any maskable"
-          }
-        ]
-      };
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'block';
+  console.log('beforeinstallprompt fired');
+});
 
-      self.addEventListener('install', event => {
-        event.waitUntil(
-          caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(['./', self.location.pathname]);
-          })
-        );
-        self.skipWaiting();
-      });
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`User response: ${outcome}`);
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+});
 
-      self.addEventListener('fetch', event => {
-        const url = new URL(event.request.url);
-        // Serve manifest.json dynamically
-        if (url.pathname === '/manifest.json' || url.pathname.endsWith('manifest.json')) {
-          event.respondWith(
-            new Response(JSON.stringify(MANIFEST), {
-              headers: { 'Content-Type': 'application/manifest+json' }
-            })
-          );
-          return;
-        }
-        event.respondWith(
-          caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-          })
-        );
-      });
+window.addEventListener('appinstalled', () => {
+  installBtn.style.display = 'none';
+  console.log('PWA installed successfully');
+});
 
-      self.addEventListener('activate', event => {
-        event.waitUntil(
-          caches.keys().then(keys => Promise.all(
-            keys.map(key => {
-              if (key !== CACHE_NAME) return caches.delete(key);
-            })
-          ))
-        );
-        self.clients.claim();
-      });
-    `;
-    const swBlob = new Blob([swCode], {type: 'application/javascript'});
-    const swURL = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swURL).then(reg => {
-      console.log('Service Worker registered for PWA');
-    }).catch(err => console.log('SW registration failed', err));
-  }
-
-  // Handle install prompt
-  let deferredPrompt;
-  const installBtn = document.getElementById('installAppBtn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later
-    deferredPrompt = e;
-    // Show the install button
-    installBtn.style.display = 'block';
-    console.log('beforeinstallprompt fired');
-  });
-
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    // Show the install prompt
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
-    // We've used the prompt, and can't use it again, throw it away
-    deferredPrompt = null;
-    // Hide the install button after install is attempted
-    installBtn.style.display = 'none';
-  });
-
-  // Optionally hide button if app is already installed
-  window.addEventListener('appinstalled', () => {
-    installBtn.style.display = 'none';
-    console.log('PWA installed successfully');
-  });
-})();
-
-/* ========== ORIGINAL APPLICATION CODE (completely unchanged from working version) ========== */
+/* ========== ORIGINAL APPLICATION CODE (completely unchanged) ========== */
 const printArea = document.getElementById('printArea');
 let currentScriptUrl = 'https://script.google.com/macros/s/AKfycbyPf3wJEx1JsCTYxsQMNbg9czuQj_TeaNDOrHRGvgUy6vfZZbFHBFmTFm56g7YW0B7B/exec';
 let isConnected = false;
@@ -885,7 +818,7 @@ if(printDenomBtn) {
   });
 }
 
-/* ========== CENTERED DENOMINATION TABLE PRINT LAYOUT (already centered) ========== */
+/* ========== UPDATED: CENTERED DENOMINATION TABLE PRINT LAYOUT ========== */
 function generateDenominationHTML() {
   const total = calculateDenominationTotal();
   const date = new Date().toLocaleDateString('en-IN');
@@ -1002,7 +935,7 @@ function generateDenominationHTML() {
   `;
 }
 
-/* ========== GOOGLE SHEETS INTEGRATION (unchanged) ========== */
+/* ========== GOOGLE SHEETS INTEGRATION ========== */
 const saveToSheetBtn = document.getElementById('saveToSheetBtn');
 const testConnectionBtn = document.getElementById('testConnectionBtn');
 const statusMessage = document.getElementById('statusMessage');
