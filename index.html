@@ -2,32 +2,16 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Checq Printer Advance 3.3.6</title>
+<title>Checq Printer Advance 3.3.7</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <!-- PWA Meta Tags -->
 <meta name="theme-color" content="#4361ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checq Printer">
-<!-- Manifest as Data URI (Fully compliant configuration layout) -->
-<link rel="manifest" href="data:application/manifest+json,{
-  %22name%22:%22Checq%20Printer%20Advance%22,
-  %22short_name%22:%22ChecqPrinter%22,
-  %22description%22:%22Professional%20Cheque%20Printing%20Application%22,
-  %22start_url%22:%22index.html%22,
-  %22display%22:%22standalone%22,
-  %22theme_color%22:%22%234361ee%22,
-  %22background_color%22:%22%23ffffff%22,
-  %22icons%22:[
-    {
-      %22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20fill='%234361ee'/%3E%3Ctext%20x='50'%20y='67'%20font-size='50'%20text-anchor='middle'%20fill='white'%3E📄%3C/text%3E%3C/svg%3E%22,
-      %22sizes%22:%22512x512%22,
-      %22type%22:%22image/svg+xml%22,
-      %22purpose%22:%22any%20maskable%22
-    }
-  ]
-}">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234361ee'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E">
+<!-- Manifest Link pointing to a separate manifest file or handled via server -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
 <style>
   :root{ 
     --w-mm:241.3; 
@@ -179,7 +163,7 @@
   .batch-input{flex:1}
   .batch-count{font-size:12px;color:#666;margin-top:4px}
 
-  /* Floating PWA Install Trigger button style configuration */
+  /* Floating PWA Install Button style configuration */
   .install-btn {
     position: fixed;
     bottom: 20px;
@@ -210,7 +194,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center">
         <h1 class="app-title">Checq Printer Advance</h1>
-        <div class="ver">v3.3.6</div>
+        <div class="ver">v3.3.7</div>
       </div>
       <div style="font-size:12px;color:#666;background:#e9ecef;padding:4px 8px;border-radius:4px">COM-10 • 241.3 × 104.8 mm</div>
     </div>
@@ -382,7 +366,7 @@
 <button id="installAppBtn" class="install-btn">📲 Install Checq App</button>
 
 <script>
-/* ========== COMPLIANT PWA REGISTRATION & WORKER CAPTURE ENGINE ========== */
+/* ========== STANDARD PWA REGISTRATION INTERFACE ========== */
 let deferredPrompt;
 const installBtn = document.getElementById('installAppBtn');
 
@@ -390,7 +374,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   if (installBtn) installBtn.style.display = 'block';
-  console.log('PWA condition matched: Install engine initialized successfully.');
+  console.log('beforeinstallprompt detected. App is installable.');
 });
 
 if (installBtn) {
@@ -398,7 +382,7 @@ if (installBtn) {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User interaction choice result status: ${outcome}`);
+    console.log(`Installation status result: ${outcome}`);
     deferredPrompt = null;
     installBtn.style.display = 'none';
   });
@@ -406,51 +390,15 @@ if (installBtn) {
 
 window.addEventListener('appinstalled', () => {
   if (installBtn) installBtn.style.display = 'none';
-  console.log('Checq Printer Application structural layout linked to desktop/mobile drawer successfully.');
+  console.log('App installed successfully.');
 });
 
-// Compliant fallback handler configuration to secure offline validity
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Encapsulated Service Worker logic string
-    const swScript = `
-      const CURRENT_CACHE = 'checq-cache-v3.3.6';
-      self.addEventListener('install', (evt) => {
-        evt.waitUntil(
-          caches.open(CURRENT_CACHE).then((cache) => {
-            return cache.addAll([self.location.href, '.']);
-          }).then(() => self.skipWaiting())
-        );
-      });
-      self.addEventListener('activate', (evt) => {
-        evt.waitUntil(
-          caches.keys().then((keys) => {
-            return Promise.all(
-              keys.map((k) => { if (k !== CURRENT_CACHE) return caches.delete(k); })
-            );
-          }).then(() => self.clients.claim())
-        );
-      });
-      self.addEventListener('fetch', (evt) => {
-        evt.respondWith(
-          caches.match(evt.request).then((hit) => {
-            return hit || fetch(evt.request).catch(() => {
-              if (evt.request.mode === 'navigate') {
-                return caches.match(self.location.href);
-              }
-            });
-          })
-        );
-      });
-    `;
-    
-    // Injecting as secure object schema to bypass standard browser origin tracking locks
-    const blobObject = new Blob([swScript], { type: 'application/javascript' });
-    const localWorkerUrl = URL.createObjectURL(blobObject);
-    
-    navigator.serviceWorker.register(localWorkerUrl, { scope: './' })
-      .then((registration) => console.log('Secure Client Worker Bound to Domain Context', registration))
-      .catch((err) => console.error('Critical PWA Registry Error Tracker', err));
+    // Calling standard clean sw.js file to satisfy native chrome installation security audits
+    navigator.serviceWorker.register('sw.js')
+      .then((registration) => console.log('Service Worker linked successfully via sw.js root context', registration))
+      .catch((err) => console.error('PWA Worker file call context error:', err));
   });
 }
 
@@ -550,7 +498,7 @@ function saveLastEntryToLocalStorage() {
     dateIso: datePicker.value || '',
     sign: signInput.value || '',
     chequeNo: chequeNoInput.value || '',
-    denom = {
+    denom: {
       d500: denominationInputs[500].value || '0',
       d200: denominationInputs[200].value || '0',
       d100: denominationInputs[100].value || '0'
@@ -1446,7 +1394,7 @@ function getLayoutData(){
     denomination[value] = input.value || '0';
   }
   const bg = printArea.style.backgroundImage || '';
-  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.3.6'}};
+  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.3.7'}};
 }
 
 function applyLayoutData(data){
@@ -1514,7 +1462,7 @@ if(saveBtn) {
     a.href = URL.createObjectURL(blob);
     const now = new Date(); 
     const stamp = now.toISOString().slice(0,19).replace(/:/g,'-');
-    a.download = `cheque-layout-v3.3.6-${stamp}.json`;
+    a.download = `cheque-layout-v3.3.7-${stamp}.json`;
     a.click();
     saveLastLayoutToLocal();
   });
