@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Checq Printer Advance 3.3.6</title>
+<title>Checq Printer Advance 3.3.5</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <!-- PWA Meta Tags -->
 <meta name="theme-color" content="#4361ee">
@@ -178,28 +178,6 @@
   .batch-row{display:flex;gap:8px;margin-bottom:8px}
   .batch-input{flex:1}
   .batch-count{font-size:12px;color:#666;margin-top:4px}
-
-  /* Floating install button */
-  .install-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 1000;
-    transition: transform 0.2s;
-  }
-  .install-btn:hover {
-    transform: scale(1.05);
-    background: var(--secondary-color);
-  }
 </style>
 </head>
 <body>
@@ -377,36 +355,8 @@
   </div>
 </div>
 
-<!-- Floating Install Button -->
-<button id="installAppBtn" class="install-btn" style="display:none;">📲 Install App</button>
-
 <script>
-/* ========== PWA INSTALL PROMPT & INLINE SERVICE WORKER GENERATION ========== */
-let deferredPrompt;
-const installBtn = document.getElementById('installAppBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = 'block';
-  console.log('beforeinstallprompt fired');
-});
-
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  console.log(`User response: ${outcome}`);
-  deferredPrompt = null;
-  installBtn.style.display = 'none';
-});
-
-window.addEventListener('appinstalled', () => {
-  installBtn.style.display = 'none';
-  console.log('PWA installed successfully');
-});
-
-// Inline Service Worker implementation code using an ephemeral Data URI Blob strategy
+/* ========== PWA SERVICE WORKER REGISTRATION (NO CUSTOM PROMPT SELECTION) ========== */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swCode = `
@@ -445,8 +395,8 @@ if ('serviceWorker' in navigator) {
     const swUrl = URL.createObjectURL(blob);
     
     navigator.serviceWorker.register(swUrl, { scope: './' })
-      .then((reg) => console.log('Dynamic PWA Service Worker Registered', reg))
-      .catch((err) => console.error('Service Worker Registry Failed', err));
+      .then((reg) => console.log('PWA Service Worker Registered Successfully', reg))
+      .catch((err) => console.error('Service Worker Registration Error', err));
   });
 }
 
@@ -1557,7 +1507,6 @@ document.addEventListener('DOMContentLoaded', function() {
   loadLastLayoutFromLocal();
   loadLastEntryFromLocalStorage();
 });
-
 </script>
 </body>
 </html>
