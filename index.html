@@ -2,15 +2,13 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Checq Printer Advance 3.4.0</title>
+<title>Checq Printer Advance 3.4.1</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<!-- PWA Meta Tags -->
 <meta name="theme-color" content="#4361ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checq Printer">
 
-<!-- Standard PWA Manifest Link pointing to physical root directory assets -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="app-icon.png">
 <style>
@@ -95,7 +93,7 @@
   /* Denomination Calculator Styles - Updated for Target & Difference */
   .denomination-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--primary-color)}
   .denomination-section h3{color:var(--secondary-color);margin-top:0;margin-bottom:12px;font-size:16px;display:flex;align-items:center;gap:8px}
-  .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1(13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
+  .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
   .denomination-row{display:flex;align-items:center;margin-bottom:10px;padding:8px;background:white;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.05);gap:8px}
   .denomination-label{flex:0 0 60px;font-weight:500;color:var(--dark-color)}
   .denomination-input{width:80px;padding:6px 8px;text-align:center;border:1px solid #ced4da;border-radius:4px;font-weight:500}
@@ -195,7 +193,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center">
         <h1 class="app-title">Checq Printer Advance</h1>
-        <div class="ver">v3.4.0</div>
+        <div class="ver">v3.4.1</div>
       </div>
       <div style="font-size:12px;color:#666;background:#e9ecef;padding:4px 8px;border-radius:4px">COM-10 • 241.3 × 104.8 mm</div>
     </div>
@@ -243,7 +241,6 @@
       <input id="jsonFile" type="file" accept=".json" style="display:none">
     </div>
     
-    <!-- Denomination Calculator Section with Target and Difference -->
     <div class="denomination-section">
       <h3>Denomination Calculator</h3>
 
@@ -270,19 +267,16 @@
         <span id="denomTotal">₹ 0</span>
       </div>
 
-      <!-- Target Amount Row -->
       <div class="target-row">
         <span>🎯 Target Amount:</span>
         <span id="targetAmountDisplay">₹ 0.00</span>
       </div>
 
-      <!-- Difference Amount Row (dynamically colored) -->
       <div class="difference-row" id="differenceRow">
         <span>📊 Difference:</span>
         <span id="differenceAmountDisplay">₹ 0.00</span>
       </div>
 
-      <!-- New Input Fields: Mobile Number & Signature -->
       <label style="margin-top:14px;">Mobile Number</label>
       <input type="tel" id="denomMobileInput" placeholder="Enter Mobile Number">
 
@@ -294,9 +288,9 @@
         <button id="clearDenomBtn" class="btn-danger">🗑️ Clear</button>
         <button id="previewDenomBtn" class="btn-primary">👀 Preview Denomination</button>
         <button id="printDenomBtn" class="btn-primary">🖨️ Print Denomination</button>
+        <button id="fetchAtmBtn" class="btn-success" style="background-color:#20b2aa; border:none;">📥 Fetch Data from ATM Entry</button>
       </div>
 
-    <!-- Batch Processing Section -->
     <div class="batch-section">
       <h3>Batch Processing</h3>
       <div class="batch-row">
@@ -306,7 +300,6 @@
       <div class="batch-count" id="batchStatus">Ready for batch printing</div>
     </div>
 
-    <!-- Google Sheets Integration Section -->
     <div class="sheet-section">
       <h3>
         Save to Google Sheets 
@@ -342,27 +335,22 @@
 
   <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f0f8ff;border-radius:8px;position:relative">
     <div id="printArea" aria-label="print area">
-      <!-- Date field (printed as spaced digits) -->
       <div id="fld_date" class="field edit-border" style="left:127.5mm;top:5.2mm;width:36.3mm;height:5.3mm;font-size:12px;text-align:center;display:flex;align-items:center;justify-content:center">
         <div class="txt">D D D D D D D D</div><div class="handle" data-handle="resize"></div>
       </div>
 
-      <!-- Payee -->
       <div id="fld_payee" class="field edit-border" style="left:10.6mm;top:14.7mm;width:100.8mm;height:5.6mm;font-size:16px;display:flex;align-items:center">
         <div class="txt">Payee Name</div><div class="handle" data-handle="resize"></div>
       </div>
 
-      <!-- Amount (numbers) -->
       <div id="fld_amount_num" class="field edit-border num" style="left:150mm;top:17mm;width:40mm;height:8mm;font-size:14px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px">
         <div class="txt">₹ 0.00</div><div class="handle" data-handle="resize"></div>
       </div>
 
-      <!-- Amount (words) -->
       <div id="fld_amount_words" class="field edit-border" style="left:18.7mm;top:23.7mm;width:141.8mm;height:10mm;font-size:14px;display:flex;align-items:center">
         <div class="txt">Amount in words</div><div class="handle" data-handle="resize"></div>
       </div>
 
-      <!-- Signature -->
       <div id="fld_sign" class="field edit-border" style="left:119.7mm;top:42.3mm;width:30.3mm;height:14mm;font-size:14px;text-align:center;display:flex;align-items:center;justify-content:center">
         <div class="txt">Authorized Signatory</div><div class="handle" data-handle="resize"></div>
       </div>
@@ -371,7 +359,6 @@
   </div>
 </div>
 
-<!-- Floating Installation Action UI -->
 <button id="installAppBtn" class="install-btn">📲 Install Checq App</button>
 
 <script>
@@ -468,10 +455,10 @@ const fld_amount_num = document.getElementById('fld_amount_num');
 const fld_date = document.getElementById('fld_date');
 const fld_sign = document.getElementById('fld_sign');
 
-// New display elements for Target & Difference
+// Display elements for Target & Difference
 const targetAmountDisplay = document.getElementById('targetAmountDisplay');
 const differenceAmountDisplay = document.getElementById('differenceAmountDisplay');
-const differenceRow = document.getElementById('differenceRow');
+const BlackRow = document.getElementById('differenceRow');
 
 // Denomination elements
 const denom500 = document.getElementById('denom500');
@@ -832,6 +819,76 @@ if(printDenomBtn) {
   });
 }
 
+/* ========== AUTOMATED ATM REMOTE DATA-SYNC MECHANISM ========== */
+const fetchAtmBtn = document.getElementById('fetchAtmBtn');
+if (fetchAtmBtn) {
+  fetchAtmBtn.addEventListener('click', function() {
+    const scriptUrl = getScriptUrl();
+    if (!scriptUrl || !scriptUrl.includes('google.com')) {
+      alert('Please set your Google Apps Script Web App URL first.');
+      return;
+    }
+    
+    fetchAtmBtn.textContent = '⏳ Syncing Data...';
+    fetchAtmBtn.disabled = true;
+    
+    const callbackName = 'atmSync_' + Date.now();
+    const params = new URLSearchParams();
+    params.append('action', 'getLastAtmEntry');
+    params.append('callback', callbackName);
+    
+    const scriptElement = document.createElement('script');
+    scriptElement.src = scriptUrl + '?' + params.toString();
+    
+    window[callbackName] = function(data) {
+      document.body.removeChild(scriptElement);
+      delete window[callbackName];
+      
+      fetchAtmBtn.textContent = '📥 Fetch Data from ATM Entry';
+      fetchAtmBtn.disabled = false;
+      
+      if (data && data.success) {
+        // Sync values to form input targets cleanly
+        if(data.denom500 !== undefined) denominationInputs[500].value = data.denom500;
+        if(data.denom200 !== undefined) denominationInputs[200].value = data.denom200;
+        if(data.denom100 !== undefined) denominationInputs[100].value = data.denom100;
+        
+        // Sync main total value output fields
+        if(data.amount) amountInput.value = data.amount;
+        
+        // Pull down the execution date record context if captured 
+        if(data.date) {
+          dateInput.value = data.date;
+          const parts = data.date.split('/');
+          if(parts.length === 3) {
+            datePicker.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          }
+        }
+        
+        // Re-execute calculations and refresh graphics contexts
+        calculateDenominationTotal();
+        updatePreview();
+        updateTargetAndDifference();
+        saveLastEntryToLocalStorage();
+        
+        alert('🎯 Success! ATM parameters imported and synced smoothly.');
+      } else {
+        alert('✗ Error syncing data: ' + (data?.error || 'No response returned from spreadsheet server.'));
+      }
+    };
+    
+    scriptElement.onerror = function() {
+      document.body.removeChild(scriptElement);
+      delete window[callbackName];
+      fetchAtmBtn.textContent = '📥 Fetch Data from ATM Entry';
+      fetchAtmBtn.disabled = false;
+      alert('✗ Request error. Verify execution layer deployment configurations.');
+    };
+    
+    document.body.appendChild(scriptElement);
+  });
+}
+
 /* ========== UPDATED: CENTERED DENOMINATION TABLE PRINT LAYOUT ========== */
 function generateDenominationHTML() {
   const total = calculateDenominationTotal();
@@ -873,81 +930,19 @@ function generateDenominationHTML() {
   <head>
     <title>Denomination Summary</title>
     <style>
-      @page {
-        size: auto;
-        margin: 5mm;
-      }
-      body { 
-        font-family: Arial, sans-serif; 
-        margin: 0; 
-        padding: 0; 
-        background-color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
-      .container {
-        text-align: center;
-        width: 100%;
-        max-width: 320px;
-      }
-      h1 { 
-        font-size: 20px; 
-        margin: 5px 0 10px 0;
-        font-weight: bold;
-      }
-      .meta-line {
-        text-align: left;
-        font-size: 13px;
-        margin-bottom: 4px;
-        color: #333;
-      }
-      .date-line {
-        text-align: right;
-        font-size: 13px;
-        font-weight: bold;
-        margin-bottom: 8px;
-      }
-      table { 
-        border-collapse: collapse; 
-        border: 2px solid black;
-        width: 100%;
-        margin: 0 auto;
-        margin-bottom: 15px;
-      }
-      th, td { 
-        border: 1px solid black; 
-        padding: 6px 12px;
-        text-align: center;
-        font-size: 14px;
-        color: black;
-        white-space: nowrap;
-      }
+      @page { size: auto; margin: 5mm; }
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .container { text-align: center; width: 100%; max-width: 320px; }
+      h1 { font-size: 20px; margin: 5px 0 10px 0; font-weight: bold; }
+      .meta-line { text-align: left; font-size: 13px; margin-bottom: 4px; color: #333; }
+      .date-line { text-align: right; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+      table { border-collapse: collapse; border: 2px solid black; width: 100%; margin: 0 auto; margin-bottom: 15px; }
+      th, td { border: 1px solid black; padding: 6px 12px; text-align: center; font-size: 14px; color: black; white-space: nowrap; }
       th { font-weight: bold; }
-      .total-row td { 
-        font-weight: bold; 
-        border-top: 2px solid black;
-        background-color: #f9f9f9;
-      }
-      .sig-space {
-        margin-top: 40px;
-        text-align: right;
-        font-size: 13px;
-        font-weight: bold;
-        color: #000;
-        padding-right: 5px;
-      }
-      .sig-line {
-        width: 140px;
-        border-bottom: 1px dashed #000;
-        margin-left: auto;
-        margin-bottom: 5px;
-      }
-      @media print {
-        .no-print { display: none !important; }
-        body { -webkit-print-color-adjust: exact; }
-      }
+      .total-row td { font-weight: bold; border-top: 2px solid black; background-color: #f9f9f9; }
+      .sig-space { margin-top: 40px; text-align: right; font-size: 13px; font-weight: bold; color: #000; padding-right: 5px; }
+      .sig-line { width: 140px; border-bottom: 1px dashed #000; margin-left: auto; margin-bottom: 5px; }
+      @media print { .no-print { display: none !important; } body { -webkit-print-color-adjust: exact; } }
     </style>
   </head>
   <body>
@@ -1451,7 +1446,7 @@ function getLayoutData(){
     denomination[value] = input.value || '0';
   }
   const bg = printArea.style.backgroundImage || '';
-  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.4.0'}};
+  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.4.1'}};
 }
 
 function applyLayoutData(data){
@@ -1521,7 +1516,7 @@ if(saveBtn) {
     a.href = URL.createObjectURL(blob);
     const now = new Date(); 
     const stamp = now.toISOString().slice(0,19).replace(/:/g,'-');
-    a.download = `cheque-layout-v3.4.0-${stamp}.json`;
+    a.download = `cheque-layout-v3.4.1-${stamp}.json`;
     a.click();
     saveLastLayoutToLocal();
   });

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'checq-cache-v3.4.0';
+const CACHE_NAME = 'checq-cache-v3.4.1';
 
 self.addEventListener('install', (evt) => {
   evt.waitUntil(
