@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Checq Printer Advance 3.4.1</title>
+<title>Checq Printer Advance 3.4.2</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="theme-color" content="#4361ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -54,14 +54,12 @@
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    /* hide the editor panel and controls */
     .panel, .controls-row, .hint, .denomination-section { display: none !important; }
-    /* be explicit: show the cheque area and its contents */
     #printArea {
       display: block !important;
       visibility: visible !important;
       position: fixed !important;
-      left: 50mm !important; /* Move 10cm to the right */
+      left: 50mm !important;
       top: 0.9mm !important;
       margin: 0 !important;
       width: 203mm !important;
@@ -76,11 +74,9 @@
       print-color-adjust: exact !important;
       color: #000 !important;
     }
-    /* hide editor UI elements */
     .handle, .edit-border { display: none !important; }
   }
 
-  /* on-screen layout */
   #printArea{width:203mm;height:103mm;position:relative;background:#fff;border:0;box-sizing:border-box;background-size:100% 100%;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:4px}
   .field{position:absolute;box-sizing:border-box;padding:2px;cursor:grab;user-select:none;touch-action:none;color:#000}
   .field .txt{pointer-events:none}
@@ -90,7 +86,6 @@
   .controls-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .hint{font-size:12px;color:#555;margin-top:12px;line-height:1.4}
   
-  /* Denomination Calculator Styles - Updated for Target & Difference */
   .denomination-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--primary-color)}
   .denomination-section h3{color:var(--secondary-color);margin-top:0;margin-bottom:12px;font-size:16px;display:flex;align-items:center;gap:8px}
   .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
@@ -99,7 +94,6 @@
   .denomination-input{width:80px;padding:6px 8px;text-align:center;border:1px solid #ced4da;border-radius:4px;font-weight:500}
   .denomination-value{flex:1;text-align:right;font-weight:500;color:var(--secondary-color)}
   
-  /* Target & Difference rows */
   .target-row, .difference-row {
     display: flex;
     align-items: center;
@@ -120,20 +114,13 @@
     font-weight: 700;
     font-size: 16px;
   }
-  .target-row span:last-child {
-    color: var(--secondary-color);
-  }
-  .difference-row span:last-child {
-    color: var(--danger-color);
-  }
-  .difference-row.positive span:last-child {
-    color: var(--success-color);
-  }
+  .target-row span:last-child { color: var(--secondary-color); }
+  .difference-row span:last-child { color: var(--danger-color); }
+  .difference-row.positive span:last-child { color: var(--success-color); }
   
   .denomination-total{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px dashed #ced4da;font-weight:600;font-size:16px;color:var(--secondary-color)}
   .denomination-buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 
-  /* New styles for version 3.3 */
   .date-row{display:flex;gap:8px;align-items:center}
   .date-row input{flex:1}
   .date-row button{width:auto;margin-top:0}
@@ -147,7 +134,6 @@
   .url-input-section{margin-top:12px}
   .url-input{font-family:monospace;font-size:12px}
   
-  /* New status indicator */
   .connection-status{display:inline-flex;align-items:center;gap:6px;margin-left:10px;font-size:12px;padding:2px 8px;border-radius:12px}
   .status-connected{background:#d4edda;color:#155724}
   .status-disconnected{background:#f8d7da;color:#721c24}
@@ -155,14 +141,12 @@
   .connected-dot{background:#28a745}
   .disconnected-dot{background:#dc3545}
   
-  /* Batch processing */
   .batch-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--warning-color)}
   .batch-section h3{color:var(--warning-color);margin-top:0;margin-bottom:12px;font-size:16px}
   .batch-row{display:flex;gap:8px;margin-bottom:8px}
   .batch-input{flex:1}
   .batch-count{font-size:12px;color:#666;margin-top:4px}
 
-  /* Floating PWA Install Button UI Setup */
   .install-btn {
     position: fixed;
     bottom: 20px;
@@ -193,7 +177,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center">
         <h1 class="app-title">Checq Printer Advance</h1>
-        <div class="ver">v3.4.1</div>
+        <div class="ver">v3.4.2</div>
       </div>
       <div style="font-size:12px;color:#666;background:#e9ecef;padding:4px 8px;border-radius:4px">COM-10 • 241.3 × 104.8 mm</div>
     </div>
@@ -312,7 +296,7 @@
       
       <div class="url-input-section">
         <label for="scriptUrlInput">Google Apps Script URL:</label>
-        <input id="scriptUrlInput" type="text" class="url-input" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbyPf3wJEx1JsCTYxsQMNbg9czuQj_TeaNDOrHRGvgUy6vfZZbFHBFmTFm56g7YW0B7B/exec">
+        <input id="scriptUrlInput" type="text" class="url-input" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbzNKU7mjcmyl5jv5hpvHck_oNTUHvlYGPxw9idHQ2XPWsDKHrC9nkaM3C0oRvGrtokr/exec">
         <div style="font-size:11px;color:#666;margin-top:4px">Use your deployed GAS web app URL</div>
       </div>
       
@@ -370,7 +354,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   if (installBtn) installBtn.style.display = 'block';
-  console.log('Browser audit pass: Application qualifies as an installable PWA layout.');
 });
 
 if (installBtn) {
@@ -378,7 +361,6 @@ if (installBtn) {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User responsive popup setup return: ${outcome}`);
     deferredPrompt = null;
     installBtn.style.display = 'none';
   });
@@ -386,7 +368,6 @@ if (installBtn) {
 
 window.addEventListener('appinstalled', () => {
   if (installBtn) installBtn.style.display = 'none';
-  console.log('App standalone profile link completed.');
 });
 
 if ('serviceWorker' in navigator) {
@@ -397,18 +378,16 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ========== ORIGINAL APPLICATION CODE (completely unchanged) ========== */
+/* ========== ORIGINAL APPLICATION CODE ========== */
 const printArea = document.getElementById('printArea');
 let currentScriptUrl = 'https://script.google.com/macros/s/AKfycbzNKU7mjcmyl5jv5hpvHck_oNTUHvlYGPxw9idHQ2XPWsDKHrC9nkaM3C0oRvGrtokr/exec';
 let isConnected = false;
 
-/* ========== HELPER FUNCTIONS ========== */
 function pxPerMM(){ 
   const r = printArea.getBoundingClientRect(); 
   return {x: r.width/203, y: r.height/103}; 
 }
 
-/* Convert number to Indian words */
 function toIndianWords(amount){
   amount = Number(amount) || 0;
   const rupees = Math.floor(amount);
@@ -434,7 +413,6 @@ function toIndianWords(amount){
   return words;
 }
 
-/* ========== ELEMENTS ========== */
 const bankSelect = document.getElementById('bankSelect');
 const payeeInput = document.getElementById('payeeInput');
 const amountInput = document.getElementById('amountInput');
@@ -455,12 +433,10 @@ const fld_amount_num = document.getElementById('fld_amount_num');
 const fld_date = document.getElementById('fld_date');
 const fld_sign = document.getElementById('fld_sign');
 
-// Display elements for Target & Difference
 const targetAmountDisplay = document.getElementById('targetAmountDisplay');
 const differenceAmountDisplay = document.getElementById('differenceAmountDisplay');
-const BlackRow = document.getElementById('differenceRow');
+const differenceRow = document.getElementById('differenceRow');
 
-// Denomination elements
 const denom500 = document.getElementById('denom500');
 const denom200 = document.getElementById('denom200');
 const denom100 = document.getElementById('denom100');
@@ -471,19 +447,9 @@ const denomTotal = document.getElementById('denomTotal');
 const denomMobileInput = document.getElementById('denomMobileInput');
 const denomSignInput = document.getElementById('denomSignInput');
 
-const denominationInputs = {
-  500: denom500,
-  200: denom200,
-  100: denom100
-};
+const denominationInputs = { 500: denom500, 200: denom200, 100: denom100 };
+const denominationValues = { 500: denom500Value, 200: denom200Value, 100: denom100Value };
 
-const denominationValues = {
-  500: denom500Value,
-  200: denom200Value,
-  100: denom100Value
-};
-
-// ===== LAST ENTRY LOCAL STORAGE =====
 const LAST_ENTRY_KEY = 'chequeLastEntry_v1';
 
 function saveLastEntryToLocalStorage() {
@@ -503,11 +469,7 @@ function saveLastEntryToLocalStorage() {
       d100: denominationInputs[100].value || '0'
     }
   };
-  try {
-    localStorage.setItem(LAST_ENTRY_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.log('LocalStorage save error', e);
-  }
+  try { localStorage.setItem(LAST_ENTRY_KEY, JSON.stringify(data)); } catch (e) {}
 }
 
 function loadLastEntryFromLocalStorage() {
@@ -527,25 +489,16 @@ function loadLastEntryFromLocalStorage() {
     if (data.denomSign) denomSignInput.value = data.denomSign;
 
     if (data.denom) {
-      if (data.denom.d500 && denominationInputs[500]) {
-        denominationInputs[500].value = data.denom.d500;
-      }
-      if (data.denom.d200 && denominationInputs[200]) {
-        denominationInputs[200].value = data.denom.d200;
-      }
-      if (data.denom.d100 && denominationInputs[100]) {
-        denominationInputs[100].value = data.denom.d100;
-      }
+      if (data.denom.d500 && denominationInputs[500]) denominationInputs[500].value = data.denom.d500;
+      if (data.denom.d200 && denominationInputs[200]) denominationInputs[200].value = data.denom.d200;
+      if (data.denom.d100 && denominationInputs[100]) denominationInputs[100].value = data.denom.d100;
       calculateDenominationTotal();
     }
     updatePreview();
     updateTargetAndDifference();
-  } catch (e) {
-    console.log('LocalStorage load error', e);
-  }
+  } catch (e) {}
 }
 
-/* ========== DATE FUNCTIONS ========== */
 function isoToDDMMYYYY(iso){
   if(!iso) return '';
   const parts = iso.split('-');
@@ -571,7 +524,6 @@ function setTodayDate() {
   updatePreview();
 }
 
-// Auto-set today's date on page load
 setTodayDate();
 
 datePicker.addEventListener('input', function(){
@@ -584,7 +536,6 @@ datePicker.addEventListener('input', function(){
 dateInput.addEventListener('input', updatePreview);
 todayBtn.addEventListener('click', setTodayDate);
 
-/* ========== UPDATE PREVIEW ========== */
 function updatePreview(){
   fld_payee.querySelector('.txt').textContent = payeeInput.value || '';
   const amt = parseFloat(amountInput.value || 0);
@@ -596,7 +547,6 @@ function updatePreview(){
   fld_sign.querySelector('.txt').textContent = signInput.value || '';
 }
 
-/* Update Target and Difference based on Amount Input field and Denomination Total */
 function updateTargetAndDifference() {
   const chequeAmount = parseFloat(amountInput.value) || 0;
   const denomTotalValue = calculateDenominationTotal();
@@ -624,8 +574,6 @@ document.getElementById('updateBtn').addEventListener('click', updatePreview);
     saveLastEntryToLocalStorage();
   });
 });
-updatePreview();
-updateTargetAndDifference();
 
 if (clearValuesBtn) {
   clearValuesBtn.addEventListener('click', () => {
@@ -643,7 +591,6 @@ if (clearValuesBtn) {
   });
 }
 
-/* ========== BACKGROUND UPLOAD ========== */
 document.getElementById('bgFile').addEventListener('change', e => {
   const f = e.target.files[0]; 
   if(!f) return;
@@ -652,7 +599,6 @@ document.getElementById('bgFile').addEventListener('change', e => {
   printArea.style.backgroundSize = '100% 100%';
 });
 
-/* ========== DRAG & RESIZE ========== */
 let dragging = null, resizing = null;
 
 function onMove(e){
@@ -702,7 +648,6 @@ document.addEventListener('selectstart', e => {
   if(dragging || resizing) e.preventDefault(); 
 });
 
-/* Ctrl+Wheel = font size; Shift+Wheel = move up/down; Alt+Wheel = move left/right */
 printArea.addEventListener('wheel', function(e){
   const fld = e.target.closest('.field');
   if(!fld) return;
@@ -735,23 +680,16 @@ printArea.addEventListener('wheel', function(e){
   }
 });
 
-/* ========== DENOMINATION CALCULATOR ========== */
-
 function calculateDenominationTotal() {
   let total = 0;
-
   for (const [valueStr, input] of Object.entries(denominationInputs)) {
     const value = parseInt(valueStr, 10);
     const count = parseInt(input.value || '0', 10) || 0;
     const lineTotal = value * count;
     total += lineTotal;
-
     const span = denominationValues[value];
-    if (span) {
-      span.textContent = `₹ ${lineTotal.toLocaleString('en-IN')}`;
-    }
+    if (span) span.textContent = `₹ ${lineTotal.toLocaleString('en-IN')}`;
   }
-
   denomTotal.textContent = `₹ ${total.toLocaleString('en-IN')}`;
   return total;
 }
@@ -798,10 +736,7 @@ if(previewDenomBtn) {
   previewDenomBtn.addEventListener('click', function() {
     const denomHtml = generateDenominationHTML();
     const win = window.open('', '_blank', 'width=400,height=450');
-    if(win) {
-      win.document.write(denomHtml);
-      win.document.close();
-    }
+    if(win) { win.document.write(denomHtml); win.document.close(); }
   });
 }
 
@@ -812,9 +747,7 @@ if(printDenomBtn) {
     if(win) {
       win.document.write(denomHtml);
       win.document.close();
-      setTimeout(() => {
-        win.print();
-      }, 500);
+      setTimeout(() => { win.print(); }, 500);
     }
   });
 }
@@ -848,15 +781,10 @@ if (fetchAtmBtn) {
       fetchAtmBtn.disabled = false;
       
       if (data && data.success) {
-        // Sync values to form input targets cleanly
         if(data.denom500 !== undefined) denominationInputs[500].value = data.denom500;
         if(data.denom200 !== undefined) denominationInputs[200].value = data.denom200;
         if(data.denom100 !== undefined) denominationInputs[100].value = data.denom100;
         
-        // Sync main total value output fields
-        if(data.amount) amountInput.value = data.amount;
-        
-        // Pull down the execution date record context if captured 
         if(data.date) {
           dateInput.value = data.date;
           const parts = data.date.split('/');
@@ -865,8 +793,9 @@ if (fetchAtmBtn) {
           }
         }
         
-        // Re-execute calculations and refresh graphics contexts
-        calculateDenominationTotal();
+        const computedTotal = calculateDenominationTotal();
+        amountInput.value = computedTotal; 
+        
         updatePreview();
         updateTargetAndDifference();
         saveLastEntryToLocalStorage();
@@ -889,7 +818,6 @@ if (fetchAtmBtn) {
   });
 }
 
-/* ========== UPDATED: CENTERED DENOMINATION TABLE PRINT LAYOUT ========== */
 function generateDenominationHTML() {
   const total = calculateDenominationTotal();
   const date = new Date().toLocaleDateString('en-IN');
@@ -898,7 +826,6 @@ function generateDenominationHTML() {
   
   let denomRows = '';
   let totalCount = 0;
-  
   const printOrder = [500, 200, 100];
   
   printOrder.forEach(value => {
@@ -906,76 +833,13 @@ function generateDenominationHTML() {
     const count = parseInt(input.value) || 0;
     totalCount += count;
     const amount = value * count;
-    
-    denomRows += `
-      <tr>
-        <td>₹ ${value}</td>
-        <td>${count}</td>
-        <td>₹ ${amount.toLocaleString('en-IN')}.00</td>
-      </tr>
-    `;
+    denomRows += `<tr><td>₹ ${value}</td><td>${count}</td><td>₹ ${amount.toLocaleString('en-IN')}.00</td></tr>`;
   });
   
   let mobileSection = mobile ? `<div class="meta-line"><strong>Mobile:</strong> ${mobile}</div>` : '';
-  let signatureSection = `
-    <div class="sig-space">
-      <div class="sig-line"></div>
-      <div>${signatureText || 'Authorized Signature'}</div>
-    </div>
-  `;
+  let signatureSection = `<div class="sig-space"><div class="sig-line"></div><div>${signatureText || 'Authorized Signature'}</div></div>`;
   
-  return `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Denomination Summary</title>
-    <style>
-      @page { size: auto; margin: 5mm; }
-      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-      .container { text-align: center; width: 100%; max-width: 320px; }
-      h1 { font-size: 20px; margin: 5px 0 10px 0; font-weight: bold; }
-      .meta-line { text-align: left; font-size: 13px; margin-bottom: 4px; color: #333; }
-      .date-line { text-align: right; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
-      table { border-collapse: collapse; border: 2px solid black; width: 100%; margin: 0 auto; margin-bottom: 15px; }
-      th, td { border: 1px solid black; padding: 6px 12px; text-align: center; font-size: 14px; color: black; white-space: nowrap; }
-      th { font-weight: bold; }
-      .total-row td { font-weight: bold; border-top: 2px solid black; background-color: #f9f9f9; }
-      .sig-space { margin-top: 40px; text-align: right; font-size: 13px; font-weight: bold; color: #000; padding-right: 5px; }
-      .sig-line { width: 140px; border-bottom: 1px dashed #000; margin-left: auto; margin-bottom: 5px; }
-      @media print { .no-print { display: none !important; } body { -webkit-print-color-adjust: exact; } }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Denomination Summary</h1>
-      <div class="date-line">Date: ${date}</div>
-      ${mobileSection}
-      <table>
-        <thead>
-          <tr>
-            <th>Denomination</th>
-            <th>Count</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${denomRows}
-          <tr class="total-row">
-            <td>Total</td>
-            <td>${totalCount}</td>
-            <td>₹ ${total.toLocaleString('en-IN')}.00</td>
-          </tr>
-        </tbody>
-      </table>
-      ${signatureSection}
-      <div class="no-print" style="margin-top: 20px;">
-        <button onclick="window.print()" style="padding: 6px 15px; cursor: pointer;">Print</button>
-        <button onclick="window.close()" style="padding: 6px 15px; margin-left: 10px; cursor: pointer;">Close</button>
-      </div>
-    </div>
-  </body>
-  </html>
-  `;
+  return `<!DOCTYPE html><html><head><title>Denomination Summary</title><style>@page { size: auto; margin: 5mm; } body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; } .container { text-align: center; width: 100%; max-width: 320px; } h1 { font-size: 20px; margin: 5px 0 10px 0; font-weight: bold; } .meta-line { text-align: left; font-size: 13px; margin-bottom: 4px; color: #333; } .date-line { text-align: right; font-size: 13px; font-weight: bold; margin-bottom: 8px; } table { border-collapse: collapse; border: 2px solid black; width: 100%; margin: 0 auto; margin-bottom: 15px; } th, td { border: 1px solid black; padding: 6px 12px; text-align: center; font-size: 14px; color: black; white-space: nowrap; } th { font-weight: bold; } .total-row td { font-weight: bold; border-top: 2px solid black; background-color: #f9f9f9; } .sig-space { margin-top: 40px; text-align: right; font-size: 13px; font-weight: bold; color: #000; padding-right: 5px; } .sig-line { width: 140px; border-bottom: 1px dashed #000; margin-left: auto; margin-bottom: 5px; } @media print { .no-print { display: none !important; } body { -webkit-print-color-adjust: exact; } }</style></head><body><div class="container"><h1>Denomination Summary</h1><div class="date-line">Date: ${date}</div>${mobileSection}<table><thead><tr><th>Denomination</th><th>Count</th><th>Value</th></tr></thead><tbody>${denomRows}<tr class="total-row"><td>Total</td><td>${totalCount}</td><td>₹ ${total.toLocaleString('en-IN')}.00</td></tr></tbody></table>${signatureSection}<div class="no-print" style="margin-top: 20px;"><button onclick="window.print()" style="padding: 6px 15px; cursor: pointer;">Print</button><button onclick="window.close()" style="padding: 6px 15px; margin-left: 10px; cursor: pointer;">Close</button></div></div></body></html>`;
 }
 
 /* ========== GOOGLE SHEETS INTEGRATION ========== */
@@ -984,8 +848,7 @@ const testConnectionBtn = document.getElementById('testConnectionBtn');
 const statusMessage = document.getElementById('statusMessage');
 
 function getScriptUrl() {
-  const savedUrl = localStorage.getItem('chequeScriptUrl');
-  return savedUrl || currentScriptUrl;
+  return localStorage.getItem('chequeScriptUrl') || currentScriptUrl;
 }
 
 function saveScriptUrl(url) {
@@ -995,13 +858,12 @@ function saveScriptUrl(url) {
 
 function updateConnectionStatus(connected) {
   isConnected = connected;
-  const statusElem = connectionStatus;
   if (connected) {
-    statusElem.className = 'connection-status status-connected';
-    statusElem.innerHTML = '<span class="status-dot connected-dot"></span><span>Connected</span>';
+    connectionStatus.className = 'connection-status status-connected';
+    connectionStatus.innerHTML = '<span class="status-dot connected-dot"></span><span>Connected</span>';
   } else {
-    statusElem.className = 'connection-status status-disconnected';
-    statusElem.innerHTML = '<span class="status-dot disconnected-dot"></span><span>Not Connected</span>';
+    connectionStatus.className = 'connection-status status-disconnected';
+    connectionStatus.innerHTML = '<span class="status-dot disconnected-dot"></span><span>Not Connected</span>';
   }
 }
 
@@ -1036,8 +898,7 @@ if(scriptUrlInput) {
 
 if(openSheetBtn) {
   openSheetBtn.addEventListener('click', function() {
-    const url = 'https://docs.google.com/spreadsheets/d/1_W9iRjMDOz5uo-G-KGLthbh2omnSYdOWPmFzsRS50FA/edit?gid=1077921365#gid=1077921365';
-    window.open(url, '_blank');
+    window.open('https://docs.google.com/spreadsheets/d/1_W9iRjMDOz5uo-G-KGLthbh2omnSYdOWPmFzsRS50FA/edit?gid=1077921365#gid=1077921365', '_blank');
   });
 }
 
@@ -1046,56 +907,34 @@ function showStatus(message, type = 'info') {
   if (type === 'success') className += ' status-success';
   else if (type === 'error') className += ' status-error';
   else if (type === 'loading') className += ' status-loading';
-  
   statusMessage.innerHTML = `<div class="${className}">${message}</div>`;
-  
-  if (type === 'success') {
-    setTimeout(() => {
-      if (statusMessage.innerHTML.includes(message)) {
-        statusMessage.innerHTML = '';
-      }
-    }, 5000);
-  }
 }
 
 async function testConnection(silent = false) {
   if (!silent) showStatus('Testing connection to Google Sheets...', 'loading');
-  
   const scriptUrl = getScriptUrl();
   if (!scriptUrl || !scriptUrl.includes('google.com')) {
     updateConnectionStatus(false);
     if (!silent) showStatus('✗ Please enter a valid Google Apps Script URL', 'error');
     return false;
   }
-  
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
-    await fetch(scriptUrl, {
-      method: 'GET',
-      mode: 'no-cors',
-      signal: controller.signal
-    }).catch(() => null);
-    
+    await fetch(scriptUrl, { method: 'GET', mode: 'no-cors', signal: controller.signal }).catch(() => null);
     clearTimeout(timeoutId);
     updateConnectionStatus(true);
     if (!silent) showStatus('✓ Connection successful! Google Sheets is ready.', 'success');
     return true;
   } catch (error) {
     updateConnectionStatus(false);
-    if (!silent) showStatus('⚠ Connection test failed, but you may still try saving.', 'error');
     return false;
   }
 }
 
 async function saveToGoogleSheets() {
   const scriptUrl = getScriptUrl();
-  
-  if (!isConnected) {
-    showStatus('Not connected. Please test connection first.', 'error');
-    return;
-  }
+  if (!isConnected) { showStatus('Not connected. Please test connection first.', 'error'); return; }
   
   const chequeData = {
     bank: bankSelect.value,
@@ -1111,15 +950,8 @@ async function saveToGoogleSheets() {
     timestamp: new Date().toISOString()
   };
   
-  if (!chequeData.payee) {
-    showStatus('✗ Please enter Payee name', 'error');
-    return;
-  }
-  
-  if (!chequeData.amount || parseFloat(chequeData.amount) <= 0) {
-    showStatus('✗ Please enter a valid Amount', 'error');
-    return;
-  }
+  if (!chequeData.payee) { showStatus('✗ Please enter Payee name', 'error'); return; }
+  if (!chequeData.amount || parseFloat(chequeData.amount) <= 0) { showStatus('✗ Please enter a valid Amount', 'error'); return; }
   
   showStatus('Saving to Google Sheets...', 'loading');
   
@@ -1128,16 +960,14 @@ async function saveToGoogleSheets() {
     const params = new URLSearchParams();
     params.append('callback', callbackName);
     params.append('data', JSON.stringify(chequeData));
-    const urlWithParams = scriptUrl + '?' + params.toString();
     
     return new Promise((resolve) => {
       const script = document.createElement('script');
-      script.src = urlWithParams;
+      script.src = scriptUrl + '?' + params.toString();
       
       window[callbackName] = function(response) {
         document.body.removeChild(script);
         delete window[callbackName];
-        
         if (response && response.success) {
           showStatus(`✓ Data saved successfully! Row: ${response.row}`, 'success');
           chequeNoInput.value = '';
@@ -1150,37 +980,21 @@ async function saveToGoogleSheets() {
             updatePreview();
             updateTargetAndDifference();
           }
-        } else {
-          showStatus(`✗ Error: ${response?.error || 'Unknown error'}`, 'error');
         }
         resolve(response);
       };
-      
       script.onerror = function() {
         document.body.removeChild(script);
         delete window[callbackName];
         saveToGoogleSheetsFallback(chequeData);
         resolve(null);
       };
-      
       document.body.appendChild(script);
-      
-      setTimeout(() => {
-        if (window[callbackName]) {
-          document.body.removeChild(script);
-          delete window[callbackName];
-          saveToGoogleSheetsFallback(chequeData);
-          resolve(null);
-        }
-      }, 10000);
     });
-  } catch (error) {
-    saveToGoogleSheetsFallback(chequeData);
-  }
+  } catch (error) { saveToGoogleSheetsFallback(chequeData); }
 }
 
 function saveToGoogleSheetsFallback(data) {
-  showStatus('Using alternative save method…', 'loading');
   const body = new URLSearchParams();
   body.append('data', JSON.stringify(data));
   fetch(getScriptUrl(), {
@@ -1188,283 +1002,102 @@ function saveToGoogleSheetsFallback(data) {
     mode: 'no-cors',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString()
-  })
-  .then(() => {
-    showStatus('✓ Data sent to Google Sheets (silent).', 'success');
-    chequeNoInput.value = '';
-  })
-  .catch(() => {
-    showStatus('✗ Could not send data.', 'error');
-  });
+  }).then(() => { showStatus('✓ Data sent to Google Sheets (silent).', 'success'); });
 }
 
 if(saveToSheetBtn) saveToSheetBtn.addEventListener('click', saveToGoogleSheets);
 if(testConnectionBtn) testConnectionBtn.addEventListener('click', () => testConnection(false));
 
-/* ========== PRINT FUNCTION ========== */
 function printChequeViaPopup() {
   updatePreview();
-
   const clone = document.getElementById('printArea').cloneNode(true);
   copyStylesInline(document.getElementById('printArea'), clone, ['background-image','background-size','background-position']);
+  clone.style.width = '203mm'; clone.style.height = '103mm';
   
-  clone.style.width = '203mm';
-  clone.style.height = '103mm';
-  clone.style.boxSizing = 'border-box';
-
   clone.querySelectorAll('.field').forEach(function(f){
     const orig = document.getElementById(f.id);
     if(!orig) return;
-    
-    f.style.left = orig.style.left;
-    f.style.top = orig.style.top;
-    f.style.width = orig.style.width;
-    f.style.height = orig.style.height;
-    f.style.position = 'absolute';
-    
+    f.style.left = orig.style.left; f.style.top = orig.style.top;
+    f.style.width = orig.style.width; f.style.height = orig.style.height; f.style.position = 'absolute';
     copyStylesInline(orig, f, ['text-align','padding-left','padding-right','padding-top','padding-bottom']);
-    
     f.classList.remove('edit-border');
-    const h = f.querySelector('.handle');
-    if(h) h.style.display = 'none';
+    if(f.querySelector('.handle')) f.querySelector('.handle').style.display = 'none';
     
     const txtChild = f.querySelector('.txt');
     const origTxt = orig.querySelector('.txt');
     if(txtChild && origTxt){
       copyStylesInline(origTxt, txtChild, ['font-size','text-align','line-height','letter-spacing']);
       txtChild.textContent = origTxt.textContent;
-      const display = window.getComputedStyle(orig).getPropertyValue('display');
-      if(display) f.style.display = display;
     }
   });
 
-  const printedStyle = window.getComputedStyle(document.getElementById('printArea'));
-  const bg = printedStyle.getPropertyValue('background-image');
-  if(bg && bg !== 'none') {
-    clone.style.backgroundImage = bg;
-    const bgsz = printedStyle.getPropertyValue('background-size') || '100% 100%';
-    clone.style.backgroundSize = bgsz;
-    const bgpos = printedStyle.getPropertyValue('background-position') || '0 0';
-    clone.style.backgroundPosition = bgpos;
-  } else {
-    clone.style.backgroundImage = 'none';
-  }
-
-  const docHtml = `<!doctype html>
-  <html>
-    <head>
-      <meta charset="utf-8"/>
-      <title>Cheque Print</title>
-      <style>
-        @page { size: 241.3mm 104.8mm; margin: 0; }
-        html,body{
-          margin:0;
-          padding:0;
-          width:241.3mm;
-          height:104.8mm; 
-          -webkit-print-color-adjust: exact; 
-          print-color-adjust: exact;
-          display: flex;
-          align-items: flex-start;
-          justify-content: flex-start;
-        }
-        #printed { 
-          width:203mm; 
-          height:103mm; 
-          box-sizing:border-box; 
-          position:relative; 
-          margin-left: 50mm;
-          margin-top: 0.9mm;
-          padding:0; 
-          overflow:hidden;
-        }
-        .field{
-          box-sizing:border-box; 
-          position:absolute; 
-          overflow:visible; 
-          color:#000; 
-        }
-      </style>
-    </head>
-    <body>
-      <div id="printed"></div>
-    </body>
-  </html>`;
-
-  const win = window.open('', '_blank', 'toolbar=0,location=0,menubar=0,width=900,height=480');
-  if(!win){
-    alert('Popup blocked. Allow popups for this page or try printing from the browser print dialog.');
-    return;
-  }
-
-  win.document.open();
-  win.document.write(docHtml);
-  win.document.close();
-
+  const docHtml = `<!doctype html><html><head><meta charset="utf-8"/><style>@page { size: 241.3mm 104.8mm; margin: 0; } html,body{margin:0;padding:0;width:241.3mm;height:104.8mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; display: flex;} #printed { width:203mm; height:103mm; position:relative; margin-left: 50mm; margin-top: 0.9mm; overflow:hidden; } .field{position:absolute; color:#000;}</style></head><body><div id="printed"></div></body></html>`;
+  const win = window.open('', '_blank', 'width=900,height=480');
+  win.document.write(docHtml); win.document.close();
   win.onload = function(){
-    const container = win.document.getElementById('printed');
-    const imported = win.document.importNode(clone, true);
-
-    imported.querySelectorAll('.field').forEach(function(f){
-      f.style.width = f.style.width || 'auto';
-      f.style.height = f.style.height || 'auto';
-      const t = f.querySelector('.txt');
-      if(t){
-        t.style.color = t.style.color || '#000';
-      }
-    });
-
-    container.appendChild(imported);
-
-    setTimeout(() => {
-      win.focus();
-      win.print();
-    }, 250);
+    win.document.getElementById('printed').appendChild(win.document.importNode(clone, true));
+    setTimeout(() => { win.focus(); win.print(); }, 250);
   };
 }
-
-// Batch print function
-const batchPrintBtn = document.getElementById('batchPrintBtn');
-const batchCount = document.getElementById('batchCount');
-const batchStatus = document.getElementById('batchStatus');
 
 if(batchPrintBtn) {
   batchPrintBtn.addEventListener('click', function() {
     const count = parseInt(batchCount.value) || 1;
-    
-    if (count < 1 || count > 100) {
-      batchStatus.textContent = 'Please enter a number between 1 and 100';
-      batchStatus.style.color = 'var(--danger-color)';
-      return;
-    }
-    
-    batchStatus.textContent = `Printing ${count} cheque(s)...`;
-    batchStatus.style.color = 'var(--primary-color)';
-    
-    for (let i = 0; i < count; i++) {
-      setTimeout(() => {
-        printChequeViaPopup();
-      }, i * 1000);
-    }
-    
-    setTimeout(() => {
-      batchStatus.textContent = `Printed ${count} cheque(s) successfully`;
-      batchStatus.style.color = 'var(--success-color)';
-    }, count * 1000 + 2000);
+    for (let i = 0; i < count; i++) { setTimeout(() => { printChequeViaPopup(); }, i * 1000); }
   });
 }
 
-const printBtn = document.getElementById('printBtn');
 if(printBtn) {
   printBtn.onclick = function () {
-    const ok = confirm(
-      '⚠️ Remember to SAVE to Google Sheet.\n\n' +
-      'Press OK to continue printing.\n' +
-      'Press Cancel to go back and click "Save to Sheet".'
-    );
-    if (!ok) {
-      const saveBtn = document.getElementById('saveToSheetBtn');
-      if (saveBtn) saveBtn.focus();
-      return;
-    }
+    if (!confirm('⚠️ Remember to SAVE to Google Sheet.\n\nPress OK to continue printing.')) return;
     printChequeViaPopup();
   };
 }
 
-/* ========== STYLE COPY HELPER ========== */
 function copyStylesInline(srcEl, destEl, extraProps = []) {
   const cs = window.getComputedStyle(srcEl);
-  const props = [
-    'font-family','font-size','font-weight','line-height','color',
-    'text-align','letter-spacing','word-spacing','white-space',
-    'padding-top','padding-right','padding-bottom','padding-left',
-    'margin-top','margin-right','margin-bottom','margin-left',
-    'box-sizing','display','align-items','justify-content',
-    'flex-direction','gap','border','border-width','border-style',
-    'border-color','background-color'
-  ].concat(extraProps || []);
-  props.forEach(p=>{
-    try{
-      const v = cs.getPropertyValue(p);
-      if(v) destEl.style.setProperty(p, v);
-    }catch(e){}
-  });
-  const tr = cs.getPropertyValue('transform');
-  if(tr && tr !== 'none') destEl.style.transform = tr;
-  const op = cs.getPropertyValue('opacity');
-  if(op) destEl.style.opacity = op;
+  const props = ['font-family','font-size','font-weight','line-height','color','text-align','letter-spacing','padding-top','padding-right','padding-bottom','padding-left','display','align-items','justify-content','background-color'].concat(extraProps || []);
+  props.forEach(p=>{ try{ destEl.style.setProperty(p, cs.getPropertyValue(p)); }catch(e){} });
 }
 
-// ===== LAST LAYOUT LOCAL STORAGE =====
+/* ========== FIXED LAYOUT DATA MANAGERS (URL & DENOM SAFETY) ========== */
 const LAST_LAYOUT_KEY = 'chequeLastLayout_v1';
 
 function saveLastLayoutToLocal() {
-  try {
-    const layout = getLayoutData();
-    localStorage.setItem(LAST_LAYOUT_KEY, JSON.stringify(layout));
-  } catch (e) {
-    console.log('LocalStorage layout save error', e);
-  }
+  try { localStorage.setItem(LAST_LAYOUT_KEY, JSON.stringify(getLayoutData())); } catch (e) {}
 }
 
 function loadLastLayoutFromLocal() {
-  try {
-    const raw = localStorage.getItem(LAST_LAYOUT_KEY);
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    applyLayoutData(data);
-  } catch (e) {
-    console.log('LocalStorage layout load error', e);
-  }
+  try { const raw = localStorage.getItem(LAST_LAYOUT_KEY); if (raw) applyLayoutData(JSON.parse(raw)); } catch (e) {}
 }
 
-/* ========== SAVE & LOAD LAYOUT ========== */
 function getLayoutData(){
   const fields = Array.from(document.querySelectorAll('.field')).map(f=>({
-    id: f.id,
-    left: f.style.left || '',
-    top: f.style.top || '',
-    width: f.style.width || '',
-    height: f.style.height || '',
-    fontSize: f.style.fontSize || '',
-    text: (f.querySelector('.txt') && f.querySelector('.txt').textContent) || ''
+    id: f.id, left: f.style.left || '', top: f.style.top || '', width: f.style.width || '', height: f.style.height || '', fontSize: f.style.fontSize || ''
   }));
-  const inputs = {
-    bank: bankSelect.value || '',
-    payee: payeeInput.value || '',
-    amount: amountInput.value || '',
-    date: dateInput.value || '',
-    sign: signInput.value || '',
-    chequeNo: chequeNoInput.value || '',
-    scriptUrl: getScriptUrl() || ''
+  return {
+    fields,
+    inputs: {
+      bank: bankSelect.value, payee: payeeInput.value, amount: amountInput.value, date: dateInput.value, sign: signInput.value, chequeNo: chequeNoInput.value,
+      scriptUrl: scriptUrlInput.value // Captures your active running link
+    },
+    denomination: {
+      denomMobile: denomMobileInput.value, denomSign: denomSignInput.value,
+      500: denominationInputs[500].value, 200: denominationInputs[200].value, 100: denominationInputs[100].value
+    },
+    background: printArea.style.backgroundImage || '',
+    meta: { version: '3.4.2' }
   };
-  const denomination = {
-    denomMobile: denomMobileInput.value || '',
-    denomSign: denomSignInput.value || ''
-  };
-  for (const [value, input] of Object.entries(denominationInputs)) {
-    denomination[value] = input.value || '0';
-  }
-  const bg = printArea.style.backgroundImage || '';
-  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.4.1'}};
 }
 
 function applyLayoutData(data){
   if(!data) return;
   if(data.fields && Array.isArray(data.fields)){
     data.fields.forEach(d => {
-      const f = document.getElementById(d.id);
-      if(!f) return;
-      if(d.left) f.style.left = d.left;
-      if(d.top) f.style.top = d.top;
-      if(d.width) f.style.width = d.width;
-      if(d.height) f.style.height = d.height;
-      if(d.fontSize){ 
-        f.style.fontSize = d.fontSize; 
-        const t = f.querySelector('.txt'); 
-        if(t) t.style.fontSize = d.fontSize; 
-      }
-      if(d.text && f.querySelector('.txt')) f.querySelector('.txt').textContent = d.text;
+      const f = document.getElementById(d.id); if(!f) return;
+      if(d.left) f.style.left = d.left; if(d.top) f.style.top = d.top;
+      if(d.width) f.style.width = d.width; if(d.height) f.style.height = d.height;
+      if(d.fontSize){ f.style.fontSize = d.fontSize; if(f.querySelector('.txt')) f.querySelector('.txt').style.fontSize = d.fontSize; }
     });
   }
   if(data.inputs){
@@ -1474,103 +1107,63 @@ function applyLayoutData(data){
     dateInput.value = data.inputs.date || '';
     if(dateInput.value && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput.value)){
       const parts = dateInput.value.split('/');
-      const iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      try{ datePicker.value = iso; }catch(e){}
+      try{ datePicker.value = `${parts[2]}-${parts[1]}-${parts[0]}`; }catch(e){}
     }
     signInput.value = data.inputs.sign || '';
     chequeNoInput.value = data.inputs.chequeNo || '';
-    if(data.inputs.scriptUrl) {
+    
+    // SAFETY LOCK 1: Only restore URL from file if your screen box is currently empty!
+    if(data.inputs.scriptUrl && !scriptUrlInput.value.trim()) {
       scriptUrlInput.value = data.inputs.scriptUrl;
       saveScriptUrl(data.inputs.scriptUrl);
     }
   }
- if(data.denomination){
+  if(data.denomination){
     if(data.denomination.denomMobile) denomMobileInput.value = data.denomination.denomMobile;
     if(data.denomination.denomSign) denomSignInput.value = data.denomination.denomSign;
     
-    // Check if the loaded JSON actually has note entries before wiping the screen
+    // SAFETY LOCK 2: Check if file layout actually has notes before overriding active screen fields
     var hasJsonNotes = Object.entries(data.denomination).some(function(pair) {
       return (pair[0] === '500' || pair[0] === '200' || pair[0] === '100') && parseInt(pair[1]) > 0;
     });
 
-    // Only overwrite if the JSON file contains active notes to prevent accidental resets
     if (hasJsonNotes) {
       for (const [value, count] of Object.entries(data.denomination)) {
-        if(denominationInputs[value]){
-          denominationInputs[value].value = count;
-        }
+        if(denominationInputs[value]) denominationInputs[value].value = count;
       }
     }
     calculateDenominationTotal();
     updateTargetAndDifference();
   }
-  if(data.background){
-    printArea.style.backgroundImage = data.background;
-    printArea.style.backgroundSize = '100% 100%';
-  }
+  if(data.background) { printArea.style.backgroundImage = data.background; printArea.style.backgroundSize = '100% 100%'; }
   updatePreview();
-  alert('Layout loaded.');
 }
-
-const saveBtn = document.getElementById('saveBtn');
-const loadBtn = document.getElementById('loadBtn');
-const jsonFile = document.getElementById('jsonFile');
 
 if(saveBtn) {
   saveBtn.addEventListener('click', () => {
-    const layout = getLayoutData();
-    const json = JSON.stringify(layout, null, 2);
-    const blob = new Blob([json], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    const now = new Date(); 
-    const stamp = now.toISOString().slice(0,19).replace(/:/g,'-');
-    a.download = `cheque-layout-v3.4.1-${stamp}.json`;
-    a.click();
+    const blob = new Blob([JSON.stringify(getLayoutData(), null, 2)], {type: 'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `cheque-layout-v3.4.2-${Date.now()}.json`; a.click();
     saveLastLayoutToLocal();
   });
 }
 
-if(loadBtn) {
-  loadBtn.addEventListener('click', () => {
-    jsonFile.click();
-  });
-}
-
+if(loadBtn) loadBtn.addEventListener('click', () => jsonFile.click());
 if(jsonFile) {
   jsonFile.addEventListener('change', e => {
-    const f = e.target.files[0];
-    if(!f) return;
+    const f = e.target.files[0]; if(!f) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const data = JSON.parse(reader.result);
-        applyLayoutData(data);
-        saveLastLayoutToLocal();
-      }catch(err){
-        alert('Invalid JSON file.');
-      }
-    };
+    reader.onload = () => { try{ applyLayoutData(JSON.parse(reader.result)); saveLastLayoutToLocal(); alert('Layout loaded successfully.'); }catch(err){ alert('Invalid JSON file.'); } };
     reader.readAsText(f);
   });
 }
-
-/* Keep mm-styles consistent on resize */
-window.addEventListener('resize', () => {
-  document.querySelectorAll('.field').forEach(f => {
-    const left = parseFloat(f.style.left||0), top = parseFloat(f.style.top||0);
-    const w = parseFloat(f.style.width||0), h = parseFloat(f.style.height||0);
-    f.style.left = left + 'mm'; 
-    f.style.top = top + 'mm';
-    f.style.width = w + 'mm'; 
-    f.style.height = h + 'mm';
-  });
-});
 
 document.addEventListener('DOMContentLoaded', function() {
   initScriptUrl();
   loadLastLayoutFromLocal();
   loadLastEntryFromLocalStorage();
+  updatePreview();
+  updateTargetAndDifference();
 });
 </script>
 </body>
