@@ -1484,12 +1484,21 @@ function applyLayoutData(data){
       saveScriptUrl(data.inputs.scriptUrl);
     }
   }
-  if(data.denomination){
+ if(data.denomination){
     if(data.denomination.denomMobile) denomMobileInput.value = data.denomination.denomMobile;
     if(data.denomination.denomSign) denomSignInput.value = data.denomination.denomSign;
-    for (const [value, count] of Object.entries(data.denomination)) {
-      if(denominationInputs[value]){
-        denominationInputs[value].value = count;
+    
+    // Check if the loaded JSON actually has note entries before wiping the screen
+    var hasJsonNotes = Object.entries(data.denomination).some(function(pair) {
+      return (pair[0] === '500' || pair[0] === '200' || pair[0] === '100') && parseInt(pair[1]) > 0;
+    });
+
+    // Only overwrite if the JSON file contains active notes to prevent accidental resets
+    if (hasJsonNotes) {
+      for (const [value, count] of Object.entries(data.denomination)) {
+        if(denominationInputs[value]){
+          denominationInputs[value].value = count;
+        }
       }
     }
     calculateDenominationTotal();
