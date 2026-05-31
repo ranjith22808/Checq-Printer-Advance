@@ -10,9 +10,9 @@
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%234361ee'/><text x='256' y='340' font-size='240' text-anchor='middle' fill='white'>📄</text></svg>",
+      "src": "app-icon.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

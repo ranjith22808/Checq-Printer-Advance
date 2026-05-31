@@ -1,9 +1,9 @@
-const CACHE_NAME = 'checq-cache-v3.3.8';
+const CACHE_NAME = 'checq-cache-v3.4.0';
 
 self.addEventListener('install', (evt) => {
   evt.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(['index.html', 'manifest.json', './']);
+      return cache.addAll(['index.html', 'manifest.json', 'app-icon.png', './']);
     }).then(() => self.skipWaiting())
   );
 });

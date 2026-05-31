@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Checq Printer Advance 3.3.9</title>
+<title>Checq Printer Advance 3.4.0</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <!-- PWA Meta Tags -->
 <meta name="theme-color" content="#4361ee">
@@ -10,9 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checq Printer">
 
-<!-- Standard PWA Manifest Link pointing to a physical file -->
+<!-- Standard PWA Manifest Link pointing to physical root directory assets -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234361ee'/%3E%3Cstop offset='100%25' stop-color='%233a0ca3'/%3E%3C/linearGradient%3E%3Cshadow id='s'%3E%3CfeDropShadow dx='0' dy='8' stdDeviation='12' flood-color='%23000' flood-opacity='0.25'/%3E%3C/shadow%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23g)'/%3E%3Cpath d='M150 245l70 70 142-142' fill='none' stroke='%234cc9f0' stroke-width='42' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/%3E%3Cpath d='M150 260l70 70 142-142' fill='none' stroke='white' stroke-width='38' stroke-linecap='round' stroke-linejoin='round' filter='url(%23s)'/%3E%3Crect x='100' y='380' width='312' height='24' rx='12' fill='%234cc9f0' opacity='0.6'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="app-icon.png">
 <style>
   :root{ 
     --w-mm:241.3; 
@@ -32,8 +32,8 @@
   h1.app-title{margin:0 0 8px 0;font-size:20px;color:var(--primary-color);font-weight:600}
   .ver{font-size:12px;color:#666;margin-left:8px;background:#e9ecef;padding:2px 6px;border-radius:4px}
   label{display:block;margin-top:12px;font-size:14px;font-weight:500;color:var(--dark-color)}
-  input[type=text], input[type=number], input[type=date], select{width:100%;padding:10px;font-size:14px;box-sizing:border-box;border:1px solid #ced4da;border-radius:4px;transition:border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out}
-  input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus{outline:0;border-color:var(--accent-color);box-shadow:0 0 0 3px rgba(76, 201, 240, 0.25)}
+  input[type=text], input[type=number], input[type=date], select, input[type=tel]{width:100%;padding:10px;font-size:14px;box-sizing:border-box;border:1px solid #ced4da;border-radius:4px;transition:border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out}
+  input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus, input[type=tel]:focus{outline:0;border-color:var(--accent-color);box-shadow:0 0 0 3px rgba(76, 201, 240, 0.25)}
   button{padding:10px 16px;margin-top:10px;border:none;border-radius:4px;font-weight:500;cursor:pointer;transition:all 0.2s ease}
   .btn-primary{background-color:var(--primary-color);color:white}
   .btn-primary:hover{background-color:var(--secondary-color);transform:translateY(-1px)}
@@ -95,7 +95,7 @@
   /* Denomination Calculator Styles - Updated for Target & Difference */
   .denomination-section{margin-top:24px;padding:16px;background:#f8f9fa;border-radius:6px;border-left:4px solid var(--primary-color)}
   .denomination-section h3{color:var(--secondary-color);margin-top:0;margin-bottom:12px;font-size:16px;display:flex;align-items:center;gap:8px}
-  .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
+  .denomination-section h3:before{content:"";display:block;width:20px;height:20px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233a0ca3"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1(13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L5 9.5V15.5L3 16V18L9 16.5V18H15V16.5L21 18V16L19 15.5V9.5L21 9ZM15 16H9V14H15V16ZM15 12H9V10H15V12Z"/></svg>') no-repeat center;background-size:contain}
   .denomination-row{display:flex;align-items:center;margin-bottom:10px;padding:8px;background:white;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.05);gap:8px}
   .denomination-label{flex:0 0 60px;font-weight:500;color:var(--dark-color)}
   .denomination-input{width:80px;padding:6px 8px;text-align:center;border:1px solid #ced4da;border-radius:4px;font-weight:500}
@@ -195,7 +195,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center">
         <h1 class="app-title">Checq Printer Advance</h1>
-        <div class="ver">v3.3.9</div>
+        <div class="ver">v3.4.0</div>
       </div>
       <div style="font-size:12px;color:#666;background:#e9ecef;padding:4px 8px;border-radius:4px">COM-10 • 241.3 × 104.8 mm</div>
     </div>
@@ -242,6 +242,7 @@
       <button id="clearValuesBtn" class="btn-secondary">🧹 Clear Cheque Values</button>
       <input id="jsonFile" type="file" accept=".json" style="display:none">
     </div>
+    
     <!-- Denomination Calculator Section with Target and Difference -->
     <div class="denomination-section">
       <h3>Denomination Calculator</h3>
@@ -280,6 +281,13 @@
         <span>📊 Difference:</span>
         <span id="differenceAmountDisplay">₹ 0.00</span>
       </div>
+
+      <!-- New Input Fields: Mobile Number & Signature -->
+      <label style="margin-top:14px;">Mobile Number</label>
+      <input type="tel" id="denomMobileInput" placeholder="Enter Mobile Number">
+
+      <label style="margin-top:10px;">Signature Details</label>
+      <input type="text" id="denomSignInput" placeholder="Enter Signatory Name/Details">
 
       <div class="denomination-buttons">
         <button id="autoFillBtn" class="btn-success">🔄 Auto-fill Amount</button>
@@ -473,6 +481,8 @@ const denom500Value = document.getElementById('denom500Value');
 const denom200Value = document.getElementById('denom200Value');
 const denom100Value = document.getElementById('denom100Value');
 const denomTotal = document.getElementById('denomTotal');
+const denomMobileInput = document.getElementById('denomMobileInput');
+const denomSignInput = document.getElementById('denomSignInput');
 
 const denominationInputs = {
   500: denom500,
@@ -498,6 +508,8 @@ function saveLastEntryToLocalStorage() {
     dateIso: datePicker.value || '',
     sign: signInput.value || '',
     chequeNo: chequeNoInput.value || '',
+    denomMobile: denomMobileInput.value || '',
+    denomSign: denomSignInput.value || '',
     denom: {
       d500: denominationInputs[500].value || '0',
       d200: denominationInputs[200].value || '0',
@@ -524,6 +536,8 @@ function loadLastEntryFromLocalStorage() {
     if (data.dateIso)  datePicker.value  = data.dateIso;
     if (data.sign)    signInput.value    = data.sign;
     if (data.chequeNo) chequeNoInput.value = data.chequeNo;
+    if (data.denomMobile) denomMobileInput.value = data.denomMobile;
+    if (data.denomSign) denomSignInput.value = data.denomSign;
 
     if (data.denom) {
       if (data.denom.d500 && denominationInputs[500]) {
@@ -610,7 +624,7 @@ function updateTargetAndDifference() {
 }
 
 document.getElementById('updateBtn').addEventListener('click', updatePreview);
-[bankSelect, amountInput, payeeInput, dateInput, datePicker, signInput, chequeNoInput].forEach(el => {
+[bankSelect, amountInput, payeeInput, dateInput, datePicker, signInput, chequeNoInput, denomMobileInput, denomSignInput].forEach(el => {
   if (!el) return;
   el.addEventListener('input', () => {
     updatePreview();
@@ -634,6 +648,8 @@ if (clearValuesBtn) {
     datePicker.value = '';
     signInput.value = '';
     chequeNoInput.value = '';
+    denomMobileInput.value = '';
+    denomSignInput.value = '';
     updatePreview();
     updateTargetAndDifference();
     saveLastEntryToLocalStorage();
@@ -783,6 +799,8 @@ if(clearDenomBtn) {
     Object.values(denominationInputs).forEach(input => {
       if(input) input.value = '0';
     });
+    denomMobileInput.value = '';
+    denomSignInput.value = '';
     calculateDenominationTotal();
     updateTargetAndDifference();
     saveLastEntryToLocalStorage();
@@ -792,7 +810,7 @@ if(clearDenomBtn) {
 if(previewDenomBtn) {
   previewDenomBtn.addEventListener('click', function() {
     const denomHtml = generateDenominationHTML();
-    const win = window.open('', '_blank', 'width=400,height=300');
+    const win = window.open('', '_blank', 'width=400,height=450');
     if(win) {
       win.document.write(denomHtml);
       win.document.close();
@@ -803,7 +821,7 @@ if(previewDenomBtn) {
 if(printDenomBtn) {
   printDenomBtn.addEventListener('click', function() {
     const denomHtml = generateDenominationHTML();
-    const win = window.open('', '_blank', 'width=400,height=300');
+    const win = window.open('', '_blank', 'width=400,height=450');
     if(win) {
       win.document.write(denomHtml);
       win.document.close();
@@ -818,6 +836,8 @@ if(printDenomBtn) {
 function generateDenominationHTML() {
   const total = calculateDenominationTotal();
   const date = new Date().toLocaleDateString('en-IN');
+  const mobile = denomMobileInput.value.trim();
+  const signatureText = denomSignInput.value.trim();
   
   let denomRows = '';
   let totalCount = 0;
@@ -838,6 +858,14 @@ function generateDenominationHTML() {
       </tr>
     `;
   });
+  
+  let mobileSection = mobile ? `<div class="meta-line"><strong>Mobile:</strong> ${mobile}</div>` : '';
+  let signatureSection = `
+    <div class="sig-space">
+      <div class="sig-line"></div>
+      <div>${signatureText || 'Authorized Signature'}</div>
+    </div>
+  `;
   
   return `
   <!DOCTYPE html>
@@ -861,28 +889,36 @@ function generateDenominationHTML() {
       }
       .container {
         text-align: center;
+        width: 100%;
+        max-width: 320px;
       }
       h1 { 
         font-size: 20px; 
         margin: 5px 0 10px 0;
         font-weight: bold;
       }
+      .meta-line {
+        text-align: left;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: #333;
+      }
       .date-line {
         text-align: right;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
       }
       table { 
         border-collapse: collapse; 
         border: 2px solid black;
-        width: auto;
+        width: 100%;
         margin: 0 auto;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
       th, td { 
         border: 1px solid black; 
-        padding: 5px 12px;
+        padding: 6px 12px;
         text-align: center;
         font-size: 14px;
         color: black;
@@ -894,6 +930,20 @@ function generateDenominationHTML() {
         border-top: 2px solid black;
         background-color: #f9f9f9;
       }
+      .sig-space {
+        margin-top: 40px;
+        text-align: right;
+        font-size: 13px;
+        font-weight: bold;
+        color: #000;
+        padding-right: 5px;
+      }
+      .sig-line {
+        width: 140px;
+        border-bottom: 1px dashed #000;
+        margin-left: auto;
+        margin-bottom: 5px;
+      }
       @media print {
         .no-print { display: none !important; }
         body { -webkit-print-color-adjust: exact; }
@@ -904,6 +954,7 @@ function generateDenominationHTML() {
     <div class="container">
       <h1>Denomination Summary</h1>
       <div class="date-line">Date: ${date}</div>
+      ${mobileSection}
       <table>
         <thead>
           <tr>
@@ -921,9 +972,10 @@ function generateDenominationHTML() {
           </tr>
         </tbody>
       </table>
-      <div class="no-print" style="margin-top: 15px;">
-        <button onclick="window.print()" style="padding: 5px 15px; cursor: pointer;">Print</button>
-        <button onclick="window.close()" style="padding: 5px 15px; margin-left: 10px; cursor: pointer;">Close</button>
+      ${signatureSection}
+      <div class="no-print" style="margin-top: 20px;">
+        <button onclick="window.print()" style="padding: 6px 15px; cursor: pointer;">Print</button>
+        <button onclick="window.close()" style="padding: 6px 15px; margin-left: 10px; cursor: pointer;">Close</button>
       </div>
     </div>
   </body>
@@ -1097,6 +1149,8 @@ async function saveToGoogleSheets() {
           if (confirm('Clear form for next cheque?')) {
             amountInput.value = '0';
             Object.values(denominationInputs).forEach(input => input.value = '0');
+            denomMobileInput.value = '';
+            denomSignInput.value = '';
             calculateDenominationTotal();
             updatePreview();
             updateTargetAndDifference();
@@ -1389,12 +1443,15 @@ function getLayoutData(){
     chequeNo: chequeNoInput.value || '',
     scriptUrl: getScriptUrl() || ''
   };
-  const denomination = {};
+  const denomination = {
+    denomMobile: denomMobileInput.value || '',
+    denomSign: denomSignInput.value || ''
+  };
   for (const [value, input] of Object.entries(denominationInputs)) {
     denomination[value] = input.value || '0';
   }
   const bg = printArea.style.backgroundImage || '';
-  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.3.9'}};
+  return {fields, inputs, denomination, background: bg, meta:{paper_mm:[241.3,104.8], created: (new Date()).toISOString(), version:'3.4.0'}};
 }
 
 function applyLayoutData(data){
@@ -1433,6 +1490,8 @@ function applyLayoutData(data){
     }
   }
   if(data.denomination){
+    if(data.denomination.denomMobile) denomMobileInput.value = data.denomination.denomMobile;
+    if(data.denomination.denomSign) denomSignInput.value = data.denomination.denomSign;
     for (const [value, count] of Object.entries(data.denomination)) {
       if(denominationInputs[value]){
         denominationInputs[value].value = count;
@@ -1462,7 +1521,7 @@ if(saveBtn) {
     a.href = URL.createObjectURL(blob);
     const now = new Date(); 
     const stamp = now.toISOString().slice(0,19).replace(/:/g,'-');
-    a.download = `cheque-layout-v3.3.9-${stamp}.json`;
+    a.download = `cheque-layout-v3.4.0-${stamp}.json`;
     a.click();
     saveLastLayoutToLocal();
   });
